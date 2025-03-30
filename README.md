@@ -1,9 +1,11 @@
-# Stormy
+# stormy
 
 Neofetch-like, minimalistic, and customizable weather-fetching tool. 
 
+<img src="./assets/screenshot.png" width="70%">
+
 > [!NOTE]
-> Stormy's idea, structure and design is based off [Rainy](https://github.com/liveslol/rainy)
+> stormy's idea, structure and design is based off [Rainy](https://github.com/liveslol/rainy)
 
 ## Features
 
@@ -37,7 +39,7 @@ sudo mv stormy /usr/local/bin/
 
 ## Configuration
 
-Stormy will create a default configuration file on first run:
+`stormy` will create a default configuration file on first run:
 
 - Linux/macOS: `~/.config/stormy/stormy.toml`
 - Windows: `%APPDATA%\stormy\stormy.toml`
