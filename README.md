@@ -2,10 +2,10 @@
 
 Neofetch-like, minimalistic, and customizable weather-fetching tool. 
 
-<img src="./assets/screenshot.png" width="70%">
+<img src="./assets/screenshot.png" width="60%">
 
 > [!NOTE]
-> stormy's idea, structure and design is based off [Rainy](https://github.com/liveslol/rainy)
+> stormy's idea, structure and design is based off [rainy](https://github.com/liveslol/rainy)
 
 ## Features
 
@@ -80,6 +80,13 @@ stormy --help
 
 ## Examples
 
+| Clear | Cloud |
+|--------------|---------------|
+| ![Clear](./assets/clear.png) | ![Cloud](./assets/cloud.png) |
+
+| Rain | Snow |
+|----------------|----------------------|
+| ![Rain](./assets/rain.png) | ![Snow](./assets/snow.png) |
 
 ## Acknowledgements
 
