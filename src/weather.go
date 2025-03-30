@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -107,6 +108,12 @@ func getCachedWeather(config Config) (*Weather, bool) {
 	now := time.Now().Unix()
 	cacheAge := now - cache.CacheTime
 	if cacheAge > config.CacheDuration*60 {
+		return nil, false
+	}
+
+	// If the city in the config doesn't match the cached city, invalidate the cache
+	if cache.Weather.Name != "" && config.City != "" &&
+		!strings.EqualFold(cache.Weather.Name, config.City) {
 		return nil, false
 	}
 
