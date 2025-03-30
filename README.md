@@ -1,11 +1,8 @@
 # stormy
 
-Neofetch-like, minimalistic, and customizable weather-fetching tool. 
+Neofetch-like, minimalistic, and customizable weather-fetching CLI based off [rainy](https://github.com/liveslol/rainy)
 
 <img src="./assets/screenshot.png" width="60%">
-
-> [!NOTE]
-> stormy's idea, structure and design is based off [rainy](https://github.com/liveslol/rainy)
 
 ## Features
 
