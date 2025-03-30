@@ -4,9 +4,6 @@ Neofetch-like, minimalistic, and customizable weather-fetching tool.
 
 > [!NOTE]
 > Stormy's idea, structure and design is based off [Rainy](https://github.com/liveslol/rainy)
->
-> It fetches data from OpenWeatherMap and
-provides an easy-to-read terminal output.
 
 ## Features
 
@@ -48,8 +45,8 @@ Stormy will create a default configuration file on first run:
 You'll need to edit this file to add your API key and preferred city:
 
 ```toml
-api_key = "your_openweathermap_api_key_here"
-city = "New Delhi"
+api_key = "api_key"      # Your OpenWeatherMap API Key
+city = "New Delhi"       # City name
 units = "metric"         # metric, imperial, or standard
 timeplus = 0             # Hours to add to local time
 timeminus = 0            # Hours to subtract from local time
