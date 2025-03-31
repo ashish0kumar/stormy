@@ -3,15 +3,14 @@
 Neofetch-like, minimalistic, and customizable weather-fetching CLI based on
 [rainy](https://github.com/liveslol/rainy)
 
-<img src="./assets/screenshot.png" width="60%">
-
 ## Features
 
 - Current weather conditions with ASCII art representation
-- Temperature, wind, humidity, and sunrise/sunset times
+- Temperature, wind, humidity, and precipitation information
 - Customizable units (metric, imperial, standard)
 - Local configuration file
 - Color support for terminals
+- Compact display mode
 
 ## Installation
 
@@ -45,14 +44,11 @@ sudo mv stormy /usr/local/bin/
 
 - `api_key`: Your OpenWeatherMap API key.
 - `city`: The city for which to fetch weather data.
-- `units`: Units for temperature and wind speed (`metric`, `imperial` or `standard`).
-- `timeplus`: Hours to add to the UTC timezone.
-- `timeminus`: Hours to subtract from the UTC timezone.
+- `units`: Units for temperature and wind speed (`metric`, `imperial` or
+  `standard`).
 - `showcityname`: Whether to display the city name (`true` or `false`).
-- `showdate`: Whether to display the current date (`true` or `false`).
-- `timeformat`: Time format for sunrise and sunset times (`24` or `12`).
-- `use_colors`: Enables and disabled text colors (`true` or `false`).
-
+- `use_colors`: Enables and disables text colors (`true` or `false`).
+- `compact`: Use a more compact display format (`true` or `false`).
 
 ### Example Config
 
@@ -60,12 +56,9 @@ sudo mv stormy /usr/local/bin/
 api_key = "your_api_key"
 city = "New Delhi"
 units = "metric"
-timeplus = 0
-timeminus = 0
 showcityname = false
-showdate = false
-timeformat = "24"
 use_colors = false
+compact = false
 ```
 
 ## Usage
@@ -80,25 +73,40 @@ stormy --city "New York"
 # Use imperial units
 stormy --units imperial
 
+# Use compact display mode
+stormy --compact
+
 # Show help
 stormy --help
 ```
 
-## Examples
+## Display Examples
 
-| Clear                        | Cloud                        |
-| ---------------------------- | ---------------------------- |
-| ![Clear](./assets/clear.png) | ![Cloud](./assets/cloud.png) |
 
-| Rain                       | Snow                       |
-| -------------------------- | -------------------------- |
-| ![Rain](./assets/rain.png) | ![Snow](./assets/snow.png) |
+
+## Weather Icons
+
+The application displays different ASCII art based on weather conditions:
+
+- Clear/Sunny
+- Partly Cloudy
+- Cloudy
+- Very Cloudy
+- Light Showers
+- Heavy Showers
+- Light Snow
+- Heavy Snow
+- Thunderstorm
+- Fog
+
+Colors are applied when the `use_colors` option is enabled.
 
 ## Acknowledgements
 
 - [OpenWeatherMap](https://openweathermap.org/) for providing weather data
 - [rainy](https://github.com/liveslol/rainy) for the overall idea, structure and
   design of the project
+- [wttr.in](https://github.com/chubin/wttr.in?tab=readme-ov-file) for the ASCII weather icons
 
 ## License
 
