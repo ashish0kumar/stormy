@@ -22,6 +22,7 @@ type Config struct {
 	TimeFormat    string `toml:"timeformat"`
 	UseColors     bool   `toml:"use_colors"`
 	CacheDuration int64  `toml:"cache_duration"`
+	NoCache       bool   `toml:"-"`
 }
 
 // Flags holds command line flags
@@ -46,6 +47,7 @@ func DefaultConfig() Config {
 		TimeFormat:    "24",
 		UseColors:     false,
 		CacheDuration: 30,
+		NoCache:       false,
 	}
 }
 
@@ -286,4 +288,5 @@ func applyFlags(config *Config, flags Flags) {
 		config.Units = flags.Units
 		ValidateConfig(config)
 	}
+	config.NoCache = flags.NoCache
 }

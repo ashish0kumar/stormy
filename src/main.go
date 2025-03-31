@@ -36,7 +36,7 @@ func main() {
 		}
 
 		// Cache the weather data
-		cacheWeather(weather)
+		cacheWeather(weather, config)
 	}
 
 	// Calculate timezone adjustment

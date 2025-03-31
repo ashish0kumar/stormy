@@ -37,9 +37,9 @@ func displayWeather(weather *Weather, config Config, adjustment time.Duration) {
 		description = "unknown conditions"
 	}
 
-	// Determine units
+	// Determine units based on config
 	windSpeedUnits := "m/s"
-	tempUnit := "K"
+	tempUnit := "°C"
 
 	switch config.Units {
 	case "metric":
@@ -48,6 +48,9 @@ func displayWeather(weather *Weather, config Config, adjustment time.Duration) {
 	case "imperial":
 		windSpeedUnits = "mph"
 		tempUnit = "°F"
+	case "standard":
+		windSpeedUnits = "m/s"
+		tempUnit = "K"
 	}
 
 	// Format temperature and wind speed

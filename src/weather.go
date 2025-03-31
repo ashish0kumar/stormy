@@ -38,6 +38,7 @@ type Weather struct {
 type WeatherCache struct {
 	Weather   Weather `json:"weather"`
 	CacheTime int64   `json:"cache_time"`
+	Units     string  `json:"units"`
 }
 
 // fetchWeather fetches weather data from the OpenWeatherMap API
@@ -81,6 +82,11 @@ func fetchWeather(config Config) (*Weather, error) {
 
 // getCachedWeather tries to get weather data from cache
 func getCachedWeather(config Config) (*Weather, bool) {
+	// If no-cache flag is set, bypass cache
+	if config.NoCache {
+		return nil, false
+	}
+
 	cachePath := GetCachePath()
 	if cachePath == "" {
 		return nil, false
@@ -117,11 +123,16 @@ func getCachedWeather(config Config) (*Weather, bool) {
 		return nil, false
 	}
 
+	// If the units have changed, invalidate the cache
+	if cache.Units != config.Units {
+		return nil, false
+	}
+
 	return &cache.Weather, true
 }
 
 // cacheWeather saves weather data to cache
-func cacheWeather(weather *Weather) {
+func cacheWeather(weather *Weather, config Config) {
 	cachePath := GetCachePath()
 	if cachePath == "" {
 		return
@@ -140,6 +151,7 @@ func cacheWeather(weather *Weather) {
 	cache := WeatherCache{
 		Weather:   *weather,
 		CacheTime: time.Now().Unix(),
+		Units:     config.Units,
 	}
 
 	// Marshal cache data
