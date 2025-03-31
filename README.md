@@ -1,6 +1,7 @@
 # stormy
 
-Neofetch-like, minimalistic, and customizable weather-fetching CLI based on [rainy](https://github.com/liveslol/rainy)
+Neofetch-like, minimalistic, and customizable weather-fetching CLI based on
+[rainy](https://github.com/liveslol/rainy)
 
 <img src="./assets/screenshot.png" width="60%">
 
@@ -10,7 +11,6 @@ Neofetch-like, minimalistic, and customizable weather-fetching CLI based on [rai
 - Temperature, wind, humidity, and sunrise/sunset times
 - Customizable units (metric, imperial, standard)
 - Local configuration file
-- Weather data caching to reduce API calls
 - Color support for terminals
 
 ## Installation
@@ -41,19 +41,31 @@ sudo mv stormy /usr/local/bin/
 - Linux/macOS: `~/.config/stormy/stormy.toml`
 - Windows: `%APPDATA%\stormy\stormy.toml`
 
-You'll need to edit this file to add your API key and preferred city:
+### Configuration Options
+
+- `api_key`: Your OpenWeatherMap API key.
+- `city`: The city for which to fetch weather data.
+- `units`: Units for temperature and wind speed (`metric`, `imperial` or `standard`).
+- `timeplus`: Hours to add to the UTC timezone.
+- `timeminus`: Hours to subtract from the UTC timezone.
+- `showcityname`: Whether to display the city name (`true` or `false`).
+- `showdate`: Whether to display the current date (`true` or `false`).
+- `timeformat`: Time format for sunrise and sunset times (`24` or `12`).
+- `use_colors`: Enables and disabled text colors (`true` or `false`).
+
+
+### Example Config
 
 ```toml
-api_key = "api_key"      # Your OpenWeatherMap API Key
-city = "New Delhi"       # City name
-units = "metric"         # metric, imperial, or standard
-timeplus = 0             # Hours to add to local time
-timeminus = 0            # Hours to subtract from local time
-showcityname = false     # Show city name in display
-showdate = false         # Show date in display
-timeformat = "24"        # 12 or 24 hour format
-use_colors = false       # Use colors in terminal output
-cache_duration = 30      # Cache duration in minutes
+api_key = "your_api_key"
+city = "New Delhi"
+units = "metric"
+timeplus = 0
+timeminus = 0
+showcityname = false
+showdate = false
+timeformat = "24"
+use_colors = false
 ```
 
 ## Usage
@@ -68,27 +80,25 @@ stormy --city "New York"
 # Use imperial units
 stormy --units imperial
 
-# Disable cache
-stormy --no-cache
-
 # Show help
 stormy --help
 ```
 
 ## Examples
 
-| Clear | Cloud |
-|--------------|---------------|
+| Clear                        | Cloud                        |
+| ---------------------------- | ---------------------------- |
 | ![Clear](./assets/clear.png) | ![Cloud](./assets/cloud.png) |
 
-| Rain | Snow |
-|----------------|----------------------|
+| Rain                       | Snow                       |
+| -------------------------- | -------------------------- |
 | ![Rain](./assets/rain.png) | ![Snow](./assets/snow.png) |
 
 ## Acknowledgements
 
 - [OpenWeatherMap](https://openweathermap.org/) for providing weather data
-- [rainy](https://github.com/liveslol/rainy) for the overall idea, structure and design of the project
+- [rainy](https://github.com/liveslol/rainy) for the overall idea, structure and
+  design of the project
 
 ## License
 

@@ -12,42 +12,37 @@ import (
 
 // Config holds the application configuration
 type Config struct {
-	ApiKey        string `toml:"api_key"`
-	City          string `toml:"city"`
-	Units         string `toml:"units"`
-	TimePlus      int64  `toml:"timeplus"`
-	TimeMinus     int64  `toml:"timeminus"`
-	ShowCityName  bool   `toml:"showcityname"`
-	ShowDate      bool   `toml:"showdate"`
-	TimeFormat    string `toml:"timeformat"`
-	UseColors     bool   `toml:"use_colors"`
-	CacheDuration int64  `toml:"cache_duration"`
-	NoCache       bool   `toml:"-"`
+	ApiKey       string `toml:"api_key"`
+	City         string `toml:"city"`
+	Units        string `toml:"units"`
+	TimePlus     int64  `toml:"timeplus"`
+	TimeMinus    int64  `toml:"timeminus"`
+	ShowCityName bool   `toml:"showcityname"`
+	ShowDate     bool   `toml:"showdate"`
+	TimeFormat   string `toml:"timeformat"`
+	UseColors    bool   `toml:"use_colors"`
 }
 
 // Flags holds command line flags
 type Flags struct {
-	ApiKey  string
-	City    string
-	Units   string
-	NoCache bool
-	Help    bool
+	ApiKey string
+	City   string
+	Units  string
+	Help   bool
 }
 
 // DefaultConfig returns a new Config with default values
 func DefaultConfig() Config {
 	return Config{
-		ApiKey:        "",
-		City:          "",
-		Units:         "metric",
-		TimePlus:      0,
-		TimeMinus:     0,
-		ShowCityName:  false,
-		ShowDate:      false,
-		TimeFormat:    "24",
-		UseColors:     false,
-		CacheDuration: 30,
-		NoCache:       false,
+		ApiKey:       "",
+		City:         "",
+		Units:        "metric",
+		TimePlus:     0,
+		TimeMinus:    0,
+		ShowCityName: false,
+		ShowDate:     false,
+		TimeFormat:   "24",
+		UseColors:    false,
 	}
 }
 
@@ -79,34 +74,6 @@ func GetConfigPath() string {
 	return filepath.Join(configDir, "stormy.toml")
 }
 
-// GetCachePath returns the path to the cache file
-func GetCachePath() string {
-	var configDir string
-
-	if runtime.GOOS == "windows" {
-		dir, err := os.UserConfigDir()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to get config directory:", err)
-			dir, err = os.UserHomeDir()
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
-				return ""
-			}
-			return filepath.Join(dir, "stormy", "cache.json")
-		}
-		configDir = filepath.Join(dir, "stormy")
-	} else {
-		dir, err := os.UserHomeDir()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
-			return ""
-		}
-		configDir = filepath.Join(dir, ".config", "stormy")
-	}
-
-	return filepath.Join(configDir, "cache.json")
-}
-
 // ValidateConfig checks if the config is valid
 func ValidateConfig(config *Config) {
 	// Validate units
@@ -130,12 +97,6 @@ func ValidateConfig(config *Config) {
 	if !validTimeFormats[config.TimeFormat] {
 		fmt.Fprintln(os.Stderr, "Warning: Invalid time format in config. Using '24' as default.")
 		config.TimeFormat = "24"
-	}
-
-	// Validate cache duration
-	if config.CacheDuration < 0 {
-		fmt.Fprintln(os.Stderr, "Warning: Negative cache duration in config. Using 30 minutes as default.")
-		config.CacheDuration = 30
 	}
 }
 
@@ -221,9 +182,6 @@ func ReadConfig() Config {
 			if useColors, ok := partialConfig["use_colors"].(bool); ok {
 				defaultConfig.UseColors = useColors
 			}
-			if cacheDuration, ok := partialConfig["cache_duration"].(int64); ok {
-				defaultConfig.CacheDuration = cacheDuration
-			}
 		}
 
 		// Write corrected config back
@@ -255,7 +213,6 @@ func parseFlags() Flags {
 	flag.StringVar(&flags.ApiKey, "key", "", "OpenWeatherMap API key")
 	flag.StringVar(&flags.City, "city", "", "City to get weather for")
 	flag.StringVar(&flags.Units, "units", "", "Units (metric, imperial, standard)")
-	flag.BoolVar(&flags.NoCache, "no-cache", false, "Disable cache")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
 
 	// Add usage information
@@ -288,5 +245,4 @@ func applyFlags(config *Config, flags Flags) {
 		config.Units = flags.Units
 		ValidateConfig(config)
 	}
-	config.NoCache = flags.NoCache
 }

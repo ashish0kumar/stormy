@@ -24,19 +24,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Check for cached data
-	weather, cacheHit := getCachedWeather(config)
-	if !cacheHit {
-		var err error
-		weather, err = fetchWeather(config)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to fetch weather data: %v\n", err)
-			fmt.Fprintln(os.Stderr, "Please check your internet connection and API key.")
-			os.Exit(1)
-		}
-
-		// Cache the weather data
-		cacheWeather(weather, config)
+	// Fetch weather data
+	weather, err := fetchWeather(config)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to fetch weather data: %v\n", err)
+		fmt.Fprintln(os.Stderr, "Please check your internet connection and API key.")
+		os.Exit(1)
 	}
 
 	// Calculate timezone adjustment

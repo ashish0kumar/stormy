@@ -6,10 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 // Weather holds the weather data returned by the API
@@ -32,13 +28,6 @@ type Weather struct {
 	} `json:"sys"`
 	Name string `json:"name"`
 	Dt   int64  `json:"dt"`
-}
-
-// WeatherCache holds cached weather data
-type WeatherCache struct {
-	Weather   Weather `json:"weather"`
-	CacheTime int64   `json:"cache_time"`
-	Units     string  `json:"units"`
 }
 
 // fetchWeather fetches weather data from the OpenWeatherMap API
@@ -78,91 +67,4 @@ func fetchWeather(config Config) (*Weather, error) {
 	}
 
 	return &weather, nil
-}
-
-// getCachedWeather tries to get weather data from cache
-func getCachedWeather(config Config) (*Weather, bool) {
-	// If no-cache flag is set, bypass cache
-	if config.NoCache {
-		return nil, false
-	}
-
-	cachePath := GetCachePath()
-	if cachePath == "" {
-		return nil, false
-	}
-
-	// Check if cache file exists
-	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
-		return nil, false
-	}
-
-	// Read cache file
-	data, err := os.ReadFile(cachePath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to read cache file:", err)
-		return nil, false
-	}
-
-	var cache WeatherCache
-	if err := json.Unmarshal(data, &cache); err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to parse cache file:", err)
-		return nil, false
-	}
-
-	// Check if cache is still valid
-	now := time.Now().Unix()
-	cacheAge := now - cache.CacheTime
-	if cacheAge > config.CacheDuration*60 {
-		return nil, false
-	}
-
-	// If the city in the config doesn't match the cached city, invalidate the cache
-	if cache.Weather.Name != "" && config.City != "" &&
-		!strings.EqualFold(cache.Weather.Name, config.City) {
-		return nil, false
-	}
-
-	// If the units have changed, invalidate the cache
-	if cache.Units != config.Units {
-		return nil, false
-	}
-
-	return &cache.Weather, true
-}
-
-// cacheWeather saves weather data to cache
-func cacheWeather(weather *Weather, config Config) {
-	cachePath := GetCachePath()
-	if cachePath == "" {
-		return
-	}
-
-	// Create directory if it doesn't exist
-	cacheDir := filepath.Dir(cachePath)
-	if _, err := os.Stat(cacheDir); os.IsNotExist(err) {
-		if err := os.MkdirAll(cacheDir, 0755); err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to create cache directory:", err)
-			return
-		}
-	}
-
-	// Create cache data
-	cache := WeatherCache{
-		Weather:   *weather,
-		CacheTime: time.Now().Unix(),
-		Units:     config.Units,
-	}
-
-	// Marshal cache data
-	data, err := json.Marshal(cache)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to marshal cache data:", err)
-		return
-	}
-
-	// Write cache file
-	if err := os.WriteFile(cachePath, data, 0644); err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to write cache file:", err)
-	}
 }
