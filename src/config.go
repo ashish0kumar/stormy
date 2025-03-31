@@ -15,20 +15,17 @@ type Config struct {
 	ApiKey       string `toml:"api_key"`
 	City         string `toml:"city"`
 	Units        string `toml:"units"`
-	TimePlus     int64  `toml:"timeplus"`
-	TimeMinus    int64  `toml:"timeminus"`
 	ShowCityName bool   `toml:"showcityname"`
-	ShowDate     bool   `toml:"showdate"`
-	TimeFormat   string `toml:"timeformat"`
 	UseColors    bool   `toml:"use_colors"`
+	Compact      bool   `toml:"compact"`
 }
 
 // Flags holds command line flags
 type Flags struct {
-	ApiKey string
-	City   string
-	Units  string
-	Help   bool
+	City    string
+	Units   string
+	Compact bool
+	Help    bool
 }
 
 // DefaultConfig returns a new Config with default values
@@ -37,12 +34,9 @@ func DefaultConfig() Config {
 		ApiKey:       "",
 		City:         "",
 		Units:        "metric",
-		TimePlus:     0,
-		TimeMinus:    0,
 		ShowCityName: false,
-		ShowDate:     false,
-		TimeFormat:   "24",
 		UseColors:    false,
+		Compact:      false,
 	}
 }
 
@@ -86,17 +80,6 @@ func ValidateConfig(config *Config) {
 	if !validUnits[config.Units] {
 		fmt.Fprintln(os.Stderr, "Warning: Invalid units in config. Using 'metric' as default.")
 		config.Units = "metric"
-	}
-
-	// Validate time format
-	validTimeFormats := map[string]bool{
-		"12": true,
-		"24": true,
-	}
-
-	if !validTimeFormats[config.TimeFormat] {
-		fmt.Fprintln(os.Stderr, "Warning: Invalid time format in config. Using '24' as default.")
-		config.TimeFormat = "24"
 	}
 }
 
@@ -164,20 +147,8 @@ func ReadConfig() Config {
 			if units, ok := partialConfig["units"].(string); ok {
 				defaultConfig.Units = units
 			}
-			if timeplus, ok := partialConfig["timeplus"].(int64); ok {
-				defaultConfig.TimePlus = timeplus
-			}
-			if timeminus, ok := partialConfig["timeminus"].(int64); ok {
-				defaultConfig.TimeMinus = timeminus
-			}
 			if showcityname, ok := partialConfig["showcityname"].(bool); ok {
 				defaultConfig.ShowCityName = showcityname
-			}
-			if showdate, ok := partialConfig["showdate"].(bool); ok {
-				defaultConfig.ShowDate = showdate
-			}
-			if timeformat, ok := partialConfig["timeformat"].(string); ok {
-				defaultConfig.TimeFormat = timeformat
 			}
 			if useColors, ok := partialConfig["use_colors"].(bool); ok {
 				defaultConfig.UseColors = useColors
@@ -210,9 +181,9 @@ func ReadConfig() Config {
 func parseFlags() Flags {
 	flags := Flags{}
 
-	flag.StringVar(&flags.ApiKey, "key", "", "OpenWeatherMap API key")
 	flag.StringVar(&flags.City, "city", "", "City to get weather for")
 	flag.StringVar(&flags.Units, "units", "", "Units (metric, imperial, standard)")
+	flag.BoolVar(&flags.Compact, "compact", false, "Compact display mode")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
 
 	// Add usage information
@@ -235,14 +206,14 @@ func parseFlags() Flags {
 
 // applyFlags applies command line flags to the config
 func applyFlags(config *Config, flags Flags) {
-	if flags.ApiKey != "" {
-		config.ApiKey = flags.ApiKey
-	}
 	if flags.City != "" {
 		config.City = flags.City
 	}
 	if flags.Units != "" {
 		config.Units = flags.Units
 		ValidateConfig(config)
+	}
+	if flags.Compact {
+		config.Compact = true
 	}
 }

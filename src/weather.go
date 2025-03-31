@@ -11,6 +11,7 @@ import (
 // Weather holds the weather data returned by the API
 type Weather struct {
 	Weather []struct {
+		ID          int    `json:"id"`
 		Main        string `json:"main"`
 		Description string `json:"description"`
 	} `json:"weather"`
@@ -22,12 +23,15 @@ type Weather struct {
 		Speed float64 `json:"speed"`
 		Deg   int     `json:"deg"`
 	} `json:"wind"`
-	Sys struct {
-		Sunrise int64 `json:"sunrise"`
-		Sunset  int64 `json:"sunset"`
-	} `json:"sys"`
-	Name string `json:"name"`
-	Dt   int64  `json:"dt"`
+	Rain struct {
+		OneHour float64 `json:"1h"`
+	} `json:"rain"`
+	Clouds struct {
+		All int `json:"all"`
+	} `json:"clouds"`
+	Pop  float64 `json:"pop"`
+	Name string  `json:"name"`
+	Dt   int64   `json:"dt"`
 }
 
 // fetchWeather fetches weather data from the OpenWeatherMap API
