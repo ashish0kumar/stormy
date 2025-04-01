@@ -133,8 +133,8 @@ Thunderstorm              Fog
      .-.                
     (   ).               
    (___(__)             _ - _ - _ - 
-    ⚡""⚡""             _ - _ - _  
-   ‚'‚'‚'‚'             _ - _ - _ -
+   ⚡""⚡""              _ - _ - _  
+  ‚'‚'‚'‚'             _ - _ - _ -
 ```
 
 Colors are applied when the `use_colors` option is enabled.
