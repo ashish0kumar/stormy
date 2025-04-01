@@ -3,6 +3,8 @@
 Neofetch-like, minimalistic, and customizable weather-fetching CLI based on
 [rainy](https://github.com/liveslol/rainy)
 
+<img src="./assets/screenshot.png" width="70%">
+
 ## Features
 
 - Current weather conditions with ASCII art representation
