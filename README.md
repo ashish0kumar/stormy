@@ -84,25 +84,60 @@ stormy --help
 
 ## Display Examples
 
-| ![basic](./assets/basic.png) | ![color](./assets/color.png) |
-| ---------------------------- | ---------------------------- |
+| ![basic](./assets/basic.png)     | ![color](./assets/color.png) |
+| -------------------------------- | ---------------------------- |
 | ![compact](./assets/compact.png) | ![units](./assets/units.png) |
-| ![](./assets/few_clouds.png) | ![](./assets/light_rain.png) |
+| ![](./assets/few_clouds.png)     | ![](./assets/light_rain.png) |
 
 ## Weather Icons
 
 The application displays different ASCII art based on weather conditions:
 
-- Clear/Sunny
-- Partly Cloudy
-- Cloudy
-- Very Cloudy
-- Light Showers
-- Heavy Showers
-- Light Snow
-- Heavy Snow
-- Thunderstorm
-- Fog
+```sh
+Clear/Sunny           Partly Cloudy
+             
+    \   /              \  /      
+     .-.            _ /"".-.    
+  ― (   ) ―          \_(   ).  
+     `-’            /(___(__) 
+    /   \                       
+                             
+
+Cloudy               Very Cloudy
+             
+     .--.               .--.    
+  .-(    ).         .-(    ).  
+ (___.__)__)      (___.__)__) 
+                             
+
+Light Showers        Heavy Showers
+             
+ _`/"".-.           _`/"".-.    
+  ,\_(   ).         ,\_(   ).  
+   /(___(__)        /(___(__) 
+     ' ' ' '       ‚'‚'‚'‚'  
+    ' ' ' '        ‚'‚'‚'‚'  
+                             
+
+Light Snow           Heavy Snow
+             
+     .-.               .-.     
+    (   ).           (   ).   
+   (___(__)         (___(__)  
+    *  *  *         * * * *   
+   *  *  *        * * * *    
+                             
+
+Thunderstorm         Fog
+             
+     .-.                
+    (   ).               
+   (___(__)         _ - _ - _ - 
+    ⚡""⚡""         _ - _ - _  
+  ‚'‚'‚'‚'         _ - _ - _ - 
+
+```
+
 
 Colors are applied when the `use_colors` option is enabled.
 
@@ -111,8 +146,10 @@ Colors are applied when the `use_colors` option is enabled.
 - [OpenWeatherMap](https://openweathermap.org/) for providing weather data
 - [rainy](https://github.com/liveslol/rainy) for the overall idea, structure and
   design of the project
-- [wttr.in](https://github.com/chubin/wttr.in?tab=readme-ov-file) for the ASCII weather icons
+- [wttr.in](https://github.com/chubin/wttr.in?tab=readme-ov-file) for the ASCII
+  weather icons
 
 ## License
 
 [MIT](LICENSE)
+````
