@@ -94,50 +94,48 @@ stormy --help
 The application displays different ASCII art based on weather conditions:
 
 ```sh
-Clear/Sunny          Partly Cloudy
+Clear/Sunny             Partly Cloudy
              
-    \   /             \  /      
-     .-.            _ /"".-.    
-  ― (   ) ―          \_(   ).  
-     `-’              / (___(__) 
+    \   /                 \  /      
+     .-.                _ /"".-.    
+  ― (   ) ―               \_(   ).  
+     `-’                  /(___(__) 
     /   \                       
                              
 
-Cloudy               Very Cloudy
+Cloudy                  Very Cloudy
              
-     .--.                .--.    
-  .-(    ).           .-(    ).  
- (___.__)__)        (___.__)__) 
+     .--.                    .--.    
+  .-(    ).               .-(    ).  
+ (___.__)__)             (___.__)__) 
                              
 
-Light Showers        Heavy Showers
+Light Showers           Heavy Showers
              
- _`/"".-.           _`/"".-.    
-  ,\_(   ).          ,\_ (   ).  
-   /(___(__)          /(___(__) 
-     ' ' ' '         ‚'‚'‚'‚'  
-    ' ' ' '          ‚'‚'‚'‚'  
+ _`/"".-.              _`/"".-.    
+  ,\_(   ).             ,\_(   ).  
+   /(___(__)             /(___(__) 
+     ' ' ' '              ‚'‚'‚'‚'  
+    ' ' ' '              ‚'‚'‚'‚'  
                              
 
-Light Snow           Heavy Snow
+Light Snow              Heavy Snow
              
-     .-.               .-.     
-    (   ).            (   ).   
-   (___(__)          (___(__)  
-    *  *  *          * * * *   
-   *  *  *          * * * *    
+     .-.                  .-.     
+    (   ).               (   ).   
+   (___(__)             (___(__)  
+    *  *  *             * * * *   
+   *  *  *             * * * *    
                              
 
-Thunderstorm           Fog
+Thunderstorm              Fog
              
      .-.                
     (   ).               
-   (___(__)          _ - _ - _ - 
-    ⚡""⚡""           _ - _ - _  
-  ‚'‚'‚'‚'          _ - _ - _ - 
-
+   (___(__)             _ - _ - _ - 
+    ⚡""⚡""              _ - _ - _  
+  ‚'‚'‚'‚'             _ - _ - _ -
 ```
-
 
 Colors are applied when the `use_colors` option is enabled.
 
@@ -152,4 +150,3 @@ Colors are applied when the `use_colors` option is enabled.
 ## License
 
 [MIT](LICENSE)
-````
