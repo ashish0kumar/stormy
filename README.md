@@ -84,7 +84,10 @@ stormy --help
 
 ## Display Examples
 
-
+| ![basic](./assets/basic.png) | ![color](./assets/color.png) |
+| ---------------------------- | ---------------------------- |
+| ![compact](./assets/compact.png) | ![units](./assets/units.png) |
+| ![](./assets/few_clouds.png) | ![](./assets/light_rain.png) |
 
 ## Weather Icons
 
