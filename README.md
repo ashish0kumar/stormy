@@ -112,11 +112,11 @@ Cloudy                  Very Cloudy
 
 Light Showers           Heavy Showers
              
- _`/"".-.              _`/"".-.    
-  ,\_(   ).             ,\_(   ).  
-   /(___(__)             /(___(__) 
-     ' ' ' '              ‚'‚'‚'‚'  
-    ' ' ' '              ‚'‚'‚'‚'  
+ _`/"".-.               _`/"".-.    
+  ,\_(   ).              ,\_(   ).  
+   /(___(__)              /(___(__) 
+     ' ' ' '               ‚'‚'‚'‚'  
+    ' ' ' '               ‚'‚'‚'‚'  
                              
 
 Light Snow              Heavy Snow
@@ -130,11 +130,11 @@ Light Snow              Heavy Snow
 
 Thunderstorm              Fog
              
-     .-.                
-    (   ).               
-   (___(__)             _ - _ - _ - 
-   ⚡""⚡""              _ - _ - _  
-  ‚'‚'‚'‚'             _ - _ - _ -
+     .-.               _ - _ - _ - 
+    (   ).              _ - _ - _  
+   (___(__)            _ - _ - _ -
+   ⚡""⚡""              
+  ‚'‚'‚'‚'             
 ```
 
 Colors are applied when the `use_colors` option is enabled.
