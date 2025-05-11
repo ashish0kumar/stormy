@@ -35,9 +35,12 @@ func displayWeather(weather *Weather, config Config) {
 	windSpeedUnits := "m/s"
 	tempUnit := "°C"
 
+	// Convert wind speed to km/h for metric
+	windSpeed := weather.Wind.Speed
 	switch config.Units {
 	case "metric":
-		windSpeedUnits = "m/s"
+		windSpeed *= 3.6 // m/s to km/h
+		windSpeedUnits = "km/h"
 		tempUnit = "°C"
 	case "imperial":
 		windSpeedUnits = "mph"
@@ -58,99 +61,70 @@ func displayWeather(weather *Weather, config Config) {
 		popPercent = int(math.Round(weather.Pop * 100))
 	}
 
-	// Format values differently for compact mode
-	var tempStr, windStr, humidityStr, precipStr string
-	if config.Compact {
-		tempStr = fmt.Sprintf("%.1f%s", weather.Main.Temp, tempUnit)
-		windStr = fmt.Sprintf("%.1f%s %s", weather.Wind.Speed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg))
-		humidityStr = fmt.Sprintf("%d%%", weather.Main.Humidity)
-		precipStr = fmt.Sprintf("%.1fmm | %d%%", precipMM, popPercent)
-	} else {
-		tempStr = fmt.Sprintf("Temperature: %.1f%s", weather.Main.Temp, tempUnit)
-		windStr = fmt.Sprintf("Wind: %.1f %s %s", weather.Wind.Speed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg))
-		humidityStr = fmt.Sprintf("Humidity: %d%%", weather.Main.Humidity)
-		precipStr = fmt.Sprintf("Precip: %.1f mm | %d%%", precipMM, popPercent)
-	}
-
-	// Apply colors if enabled
-	tempDisplay := tempStr
-	windDisplay := windStr
-	humidityDisplay := humidityStr
-	precipDisplay := precipStr
-
-	if config.UseColors {
-		tempDisplay = color.RedString(tempStr)
-		windDisplay = color.GreenString(windStr)
-		humidityDisplay = color.CyanString(humidityStr)
-
-		// Special handling for precipitation to color parts differently
-		if config.Compact {
-			parts := strings.Split(precipStr, "|")
-			if len(parts) == 2 {
-				precipDisplay = color.BlueString(parts[0]) + "|" + color.CyanString(parts[1])
-			} else {
-				precipDisplay = color.BlueString(precipStr)
-			}
-		} else {
-			parts := strings.SplitN(precipStr, ":", 2)
-			if len(parts) == 2 {
-				precipDisplay = parts[0] + ":" + color.BlueString(parts[1])
-			}
-		}
-	}
+	var labels, values []string
 
 	// City name display
-	cityDisplay := ""
+	cityName := weather.Name
+	if config.City != "" && cityName == "" {
+		cityName = config.City
+	}
+
 	if config.ShowCityName {
-		cityName := weather.Name
-		if config.City != "" && cityName == "" {
-			cityName = config.City
-		}
-
-		if config.UseColors {
-			cityDisplay = color.GreenString(color.New(color.Bold).Sprintf("City: %s", cityName))
+		if !config.Compact {
+			labels = append(labels, "City")
+			values = append(values, cityName)
 		} else {
-			cityDisplay = fmt.Sprintf("City: %s", cityName)
-		}
-
-		if config.Compact {
-			cityDisplay = cityName // Just show the name without label
-			if config.UseColors {
-				cityDisplay = color.GreenString(color.New(color.Bold).Sprintf(cityName))
-			}
+			// In compact mode, we'll just show the city name in the display function
 		}
 	}
 
-	// Weather condition display
-	var weatherDisplay string
-	if config.Compact {
-		weatherDisplay = description
+	// Weather info
+	if !config.Compact {
+		labels = append(labels, "Weather ")
+		values = append(values, description)
+
+		labels = append(labels, "Temp ")
+		values = append(values, fmt.Sprintf("%.1f%s", weather.Main.Temp, tempUnit))
+
+		labels = append(labels, "Wind ")
+		values = append(values, fmt.Sprintf("%.1f %s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg)))
+
+		labels = append(labels, "Humidity ")
+		values = append(values, fmt.Sprintf("%d%%", weather.Main.Humidity))
+
+		labels = append(labels, "Precip ")
+		values = append(values, fmt.Sprintf("%.1f mm | %d%%", precipMM, popPercent))
+
 	} else {
-		weatherDisplay = fmt.Sprintf("Weather: %s", description)
+		// Compact mode doesn't use labels in the same way
+		weatherDisplay := description
+		tempDisplay := fmt.Sprintf("%.1f%s", weather.Main.Temp, tempUnit)
+		windDisplay := fmt.Sprintf("%.1f%s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg))
+		humidityDisplay := fmt.Sprintf("%d%%", weather.Main.Humidity)
+		precipDisplay := fmt.Sprintf("%.1fmm | %d%%", precipMM, popPercent)
+
+		// For compact mode, we'll just pass these values directly to the display function
+		displayWeatherArtCompact(
+			mainWeather,
+			weatherID,
+			cityName,
+			weatherDisplay,
+			tempDisplay,
+			windDisplay,
+			humidityDisplay,
+			precipDisplay,
+			config,
+		)
+		return
 	}
 
-	if config.UseColors {
-		weatherDisplay = getColoredWeatherText(mainWeather, description, config.Compact)
-	}
-
-	cityDisplay = strings.TrimSpace(cityDisplay)
-	weatherDisplay = strings.TrimSpace(weatherDisplay)
-	tempDisplay = strings.TrimSpace(tempDisplay)
-	windDisplay = strings.TrimSpace(windDisplay)
-	humidityDisplay = strings.TrimSpace(humidityDisplay)
-	precipDisplay = strings.TrimSpace(precipDisplay)
-
-	// Display the weather with icon
-	displayWeatherArt(mainWeather, weatherID, cityDisplay, weatherDisplay,
-		tempDisplay, windDisplay, humidityDisplay, precipDisplay, config)
+	// For standard mode, display with aligned labels and values
+	displayWeatherArtAligned(mainWeather, weatherID, labels, values, config)
 }
 
 // getColoredWeatherText returns a colored weather text based on the condition
-func getColoredWeatherText(mainWeather, description string, compact bool) string {
+func getColoredWeatherText(mainWeather, description string) string {
 	text := description
-	if !compact {
-		text = fmt.Sprintf("Weather: %s", description)
-	}
 
 	switch mainWeather {
 	case "Clear":
@@ -168,24 +142,121 @@ func getColoredWeatherText(mainWeather, description string, compact bool) string
 	}
 }
 
-// displayWeatherArt shows ASCII art based on the weather condition
-func displayWeatherArt(mainWeather string, weatherID int, cityDisplay, weatherDisplay,
+// displayWeatherArtAligned shows ASCII art with vertically aligned labels and values
+func displayWeatherArtAligned(mainWeather string, weatherID int, labels, values []string, config Config) {
+	// Get the weather icon
+	iconLines := getWeatherIcon(mainWeather, weatherID, config.UseColors)
+
+	// Find the maximum label length for alignment
+	maxLabelLen := 0
+	for _, label := range labels {
+		if len(label) > maxLabelLen {
+			maxLabelLen = len(label)
+		}
+	}
+
+	// Apply colors to values if enabled
+	coloredValues := make([]string, len(values))
+	coloredLabels := make([]string, len(labels))
+	for i, value := range values {
+		if config.UseColors {
+			coloredLabels[i] = color.BlueString(labels[i])
+		} else {
+			coloredLabels[i] = labels[i]
+		}
+
+		if config.UseColors {
+			switch i {
+			case 0: // City
+				coloredValues[i] = color.GreenString(color.New(color.Bold).Sprintf(value))
+			case 1: // Weather description
+				coloredValues[i] = getColoredWeatherText(mainWeather, value)
+			case 2: // Temperature
+				coloredValues[i] = color.RedString(value)
+			case 3: // Wind
+				coloredValues[i] = color.GreenString(value)
+			case 4: // Humidity
+				coloredValues[i] = color.CyanString(value)
+			case 5: // Precipitation
+				parts := strings.Split(value, "|")
+				if len(parts) == 2 {
+					coloredValues[i] = color.BlueString(strings.TrimSpace(parts[0])) + " | " + color.CyanString(strings.TrimSpace(parts[1]))
+				} else {
+					coloredValues[i] = color.BlueString(value)
+				}
+			default:
+				coloredValues[i] = value
+			}
+		} else {
+			coloredValues[i] = value
+		}
+	}
+
+	// Prepare the text lines
+	var textLines []string
+	textLines = append(textLines, "") // Empty line to match icon top spacing
+
+	// Add formatted lines with aligned labels and values
+	for i := 0; i < len(labels); i++ {
+		if config.UseColors {
+			formattedLine := fmt.Sprintf("%-*s %s", maxLabelLen, labels[i], values[i])
+			coloredLabel := color.BlueString(labels[i])
+			formattedLine = strings.Replace(formattedLine, labels[i], coloredLabel, 1)
+			formattedLine = strings.Replace(formattedLine, values[i], coloredValues[i], 1)
+			textLines = append(textLines, formattedLine)
+		} else {
+			textLines = append(textLines, fmt.Sprintf("%-*s %s", maxLabelLen, labels[i], values[i]))
+		}
+	}
+
+	textLines = append(textLines, "") // Empty line to match icon bottom spacing
+
+	// Print icon and text lines together
+	for i := 0; i < len(iconLines); i++ {
+		iconLine := iconLines[i]
+		textLine := ""
+		if i < len(textLines) {
+			textLine = textLines[i]
+		}
+		fmt.Printf("%s  %s\n", iconLine, textLine)
+	}
+}
+
+// displayWeatherArtCompact shows ASCII art with compact formatting
+func displayWeatherArtCompact(mainWeather string, weatherID int, cityName, weatherDisplay,
 	tempDisplay, windDisplay, humidityDisplay, precipDisplay string, config Config) {
 
 	// Get the weather icon
 	iconLines := getWeatherIcon(mainWeather, weatherID, config.UseColors)
 
-	// Prepare the text lines (remove date line)
+	// Apply colors if enabled
+	if config.UseColors {
+		if cityName != "" && config.ShowCityName {
+			cityName = color.GreenString(color.New(color.Bold).Sprintf(cityName))
+		}
+		weatherDisplay = getColoredWeatherText(mainWeather, weatherDisplay)
+		tempDisplay = color.RedString(tempDisplay)
+		windDisplay = color.GreenString(windDisplay)
+		humidityDisplay = color.CyanString(humidityDisplay)
+
+		parts := strings.Split(precipDisplay, "|")
+		if len(parts) == 2 {
+			precipDisplay = color.BlueString(strings.TrimSpace(parts[0])) + " | " + color.CyanString(strings.TrimSpace(parts[1]))
+		} else {
+			precipDisplay = color.BlueString(precipDisplay)
+		}
+	}
+
+	// Prepare the text lines
 	var textLines []string
 	textLines = append(textLines, "") // Empty line to match icon top spacing
 
-	if cityDisplay != "" {
-		textLines = append(textLines, cityDisplay)
+	if cityName != "" && config.ShowCityName {
+		textLines = append(textLines, cityName)
 	}
-	if weatherDisplay != "" {
-		textLines = append(textLines, weatherDisplay)
-	}
-	textLines = append(textLines, tempDisplay, windDisplay, humidityDisplay)
+
+	textLines = append(textLines, weatherDisplay, tempDisplay, windDisplay, humidityDisplay)
+
 	if precipDisplay != "" {
 		textLines = append(textLines, precipDisplay)
 	}
