@@ -9,7 +9,7 @@ Neofetch-like, minimalistic, and customizable weather CLI inspired by
 
 stormy’s idea, structure, and design are based off
 [rainy](https://github.com/liveslol/rainy), but it’s written in Go instead of
-Python, making it noticeably faster.
+Python.
 
 I built this because I really liked the concept of a Neofetch-style weather CLI.
 The simplicity and visual appeal of _rainy_ instantly clicked with me, and I
