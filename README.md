@@ -1,9 +1,20 @@
 # stormy
 
-Neofetch-like, minimalistic, and customizable weather-fetching CLI based on
-[rainy](https://github.com/liveslol/rainy)
+Neofetch-like, minimalistic, and customizable weather CLI inspired by
+[rainy](https://github.com/liveslol/rainy), rewritten in Go.
 
-<img src="./assets/screenshot.png" width="70%">
+<img src="./assets/ss.png" width="70%">
+
+## Motivation
+
+stormy’s idea, structure, and design are based off
+[rainy](https://github.com/liveslol/rainy), but it’s written in Go instead of
+Python, making it noticeably faster.
+
+I built this because I really liked the concept of a Neofetch-style weather CLI.
+The simplicity and visual appeal of _rainy_ instantly clicked with me, and I
+wanted to recreate that experience in Go — partly for my own satisfaction and
+partly because I enjoy building clean CLI tools.
 
 ## Features
 
@@ -29,7 +40,7 @@ git clone https://github.com/ashish0kumar/stormy.git
 cd stormy
 
 # Build the application
-go build -o stormy ./src
+go build
 
 # Move to a directory in your PATH (optional)
 sudo mv stormy /usr/local/bin/
@@ -84,60 +95,11 @@ stormy --help
 
 ## Display Examples
 
-| ![basic](./assets/basic.png)     | ![color](./assets/color.png) |
-| -------------------------------- | ---------------------------- |
-| ![compact](./assets/compact.png) | ![units](./assets/units.png) |
-| ![](./assets/few_clouds.png)     | ![](./assets/light_rain.png) |
-
-## Weather Icons
-
-The application displays different ASCII art based on weather conditions:
-
-```sh
-Clear/Sunny             Partly Cloudy
-             
-    \   /                 \  /      
-     .-.                _ /"".-.    
-  ― (   ) ―               \_(   ).  
-     `-’                  /(___(__) 
-    /   \                       
-                             
-
-Cloudy                  Very Cloudy
-             
-     .--.                    .--.    
-  .-(    ).               .-(    ).  
- (___.__)__)             (___.__)__) 
-                             
-
-Light Showers           Heavy Showers
-             
- _`/"".-.               _`/"".-.    
-  ,\_(   ).              ,\_(   ).  
-   /(___(__)              /(___(__) 
-     ' ' ' '               ‚'‚'‚'‚'  
-    ' ' ' '               ‚'‚'‚'‚'  
-                             
-
-Light Snow              Heavy Snow
-             
-     .-.                  .-.     
-    (   ).               (   ).   
-   (___(__)             (___(__)  
-    *  *  *             * * * *   
-   *  *  *             * * * *    
-                             
-
-Thunderstorm              Fog
-             
-     .-.               _ - _ - _ - 
-    (   ).              _ - _ - _  
-   (___(__)            _ - _ - _ -
-   ⚡""⚡""              
-  ‚'‚'‚'‚'             
-```
-
-Colors are applied when the `use_colors` option is enabled.
+| ![](./assets/base.png)    | ![](./assets/colored.png)  |
+| ------------------------- | -------------------------- |
+| ![](./assets/minimal.png) | ![](./assets/cityname.png) |
+| ![](./assets/1.png)       | ![](./assets/3.png)        |
+| ![](./assets/4.png)       | ![](./assets/2.png)        |
 
 ## Acknowledgements
 
