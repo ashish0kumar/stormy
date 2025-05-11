@@ -1,4 +1,4 @@
-package main
+package weather
 
 // getIcon returns the ASCII art for a given weather condition with proper spacing
 func getIcon(name string, useColors bool) []string {

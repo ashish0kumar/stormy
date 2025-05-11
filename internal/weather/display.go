@@ -1,4 +1,4 @@
-package main
+package weather
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ func getWindDirectionSymbol(degrees int) string {
 	return directions[index]
 }
 
-// displayWeather renders the weather data with ASCII art
-func displayWeather(weather *Weather, config Config) {
+// DisplayWeather renders the weather data with ASCII art
+func DisplayWeather(weather *Weather, config Config) {
 	// Get main weather condition
 	var mainWeather string
 	var description string

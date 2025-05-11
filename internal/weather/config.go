@@ -1,4 +1,4 @@
-package main
+package weather
 
 import (
 	"flag"
@@ -177,8 +177,8 @@ func ReadConfig() Config {
 	return config
 }
 
-// parseFlags parses command line flags
-func parseFlags() Flags {
+// ParseFlags parses command line flags
+func ParseFlags() Flags {
 	flags := Flags{}
 
 	flag.StringVar(&flags.City, "city", "", "City to get weather for")
@@ -204,8 +204,8 @@ func parseFlags() Flags {
 	return flags
 }
 
-// applyFlags applies command line flags to the config
-func applyFlags(config *Config, flags Flags) {
+// ApplyFlags applies command line flags to the config
+func ApplyFlags(config *Config, flags Flags) {
 	if flags.City != "" {
 		config.City = flags.City
 	}

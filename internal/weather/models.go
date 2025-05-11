@@ -1,4 +1,4 @@
-package main
+package weather
 
 import (
 	"encoding/json"
@@ -34,11 +34,10 @@ type Weather struct {
 	Dt   int64   `json:"dt"`
 }
 
-// fetchWeather fetches weather data from the OpenWeatherMap API
-func fetchWeather(config Config) (*Weather, error) {
+// FetchWeather fetches weather data from the OpenWeatherMap API
+func FetchWeather(config Config) (*Weather, error) {
 	// URL encode the city parameter
 	encodedCity := url.QueryEscape(config.City)
-
 	apiURL := fmt.Sprintf(
 		"https://api.openweathermap.org/data/2.5/weather?q=%s&units=%s&APPID=%s",
 		encodedCity,
