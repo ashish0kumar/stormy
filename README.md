@@ -1,9 +1,15 @@
-# stormy
+<h1 align="center">stormy</h1>
 
-Neofetch-like, minimalistic, and customizable weather CLI inspired by
-[rainy](https://github.com/liveslol/rainy), rewritten in Go.
+<p align="center">
+Minimal, customizable and neofetch-like weather CLI inspired by
+<a href="https://github.com/liveslol/rainy">rainy</a>, written in Go
+</p>
 
+<div align="center">
 <img src="./assets/ss.png" width="70%">
+</div>
+
+---
 
 ## Motivation
 
@@ -109,6 +115,16 @@ stormy --help
 - [wttr.in](https://github.com/chubin/wttr.in?tab=readme-ov-file) for the ASCII
   weather icons
 
-## License
+<br>
 
-[MIT](LICENSE)
+<p align="center">
+	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" />
+</p>
+
+<p align="center">
+        <i><code>&copy 2025-present <a href="https://github.com/ashish0kumar">Ashish Kumar</a></code></i>
+</p>
+
+<div align="center">
+<a href="https://github.com/ashish0kumar/stormy/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ashish0kumar/stormy?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE"></a>&nbsp;&nbsp;
+</div>
