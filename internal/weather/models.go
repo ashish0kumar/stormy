@@ -13,6 +13,21 @@ const (
 	ProviderOpenMeteo   = "OpenMeteo"
 )
 
+type OpenMeteoWeather struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Current   struct {
+		Time               string  `json:"time"`
+		Interval           int     `json:"interval"`
+		Temperature2m      float64 `json:"temperature_2m"`
+		WeatherCode        int     `json:"weather_code"`
+		Precipitation      float64 `json:"precipitation"`
+		RelativeHumidity2m int     `json:"relative_humidity_2m"`
+		WindSpeed10m       float64 `json:"wind_speed_10m"`
+		WindDirection10m   int     `json:"wind_direction_10m"`
+	} `json:"current"`
+}
+
 // Weather holds the weather data returned by the API
 type Weather struct {
 	Weather []struct {
@@ -77,6 +92,112 @@ func GetFirstGeoResult(encodedCity string) (*GeoResult, error) {
 	return &geo.Results[0], nil
 }
 
+func WeatherCodeToSentence(code int) string {
+	switch code {
+	case 0:
+		return "Clear"
+	case 1, 2, 3:
+		return "Clear"
+	case 45, 48:
+		return "Clouds"
+	case 51, 53, 55:
+		return "Clouds"
+	case 56, 57:
+		return "Clouds"
+	case 61, 63, 65:
+		return "Rain"
+	case 66, 67:
+		return "Rain"
+	case 71, 73, 75:
+		return "Snow"
+	case 77:
+		return "Snow"
+	case 80, 81, 82:
+		return "Rain"
+	case 85, 86:
+		return "Snow"
+	case 95:
+		return "Thunderstorm"
+	case 96, 99:
+		return "Thunderstorm"
+	default:
+		return "Unknown weather code"
+	}
+}
+
+func ConvertOpenMeteoToWeather(om OpenMeteoWeather, cityName string) Weather {
+
+	return Weather{
+		Weather: []struct {
+			ID          int    `json:"id"`
+			Main        string `json:"main"`
+			Description string `json:"description"`
+		}{
+			{
+				ID:          om.Current.WeatherCode,
+				Main:        WeatherCodeToSentence(om.Current.WeatherCode), // Open-Meteo does not provide main/description, you may map codes to strings
+				Description: WeatherCodeToSentence(om.Current.WeatherCode),
+			},
+		},
+		Main: struct {
+			Temp     float64 `json:"temp"`
+			Humidity int     `json:"humidity"`
+		}{
+			Temp:     om.Current.Temperature2m,
+			Humidity: om.Current.RelativeHumidity2m,
+		},
+		Wind: struct {
+			Speed float64 `json:"speed"`
+			Deg   int     `json:"deg"`
+		}{
+			Speed: om.Current.WindSpeed10m,
+			Deg:   om.Current.WindDirection10m,
+		},
+		Rain: struct {
+			OneHour float64 `json:"1h"`
+		}{
+			OneHour: om.Current.Precipitation,
+		},
+		Clouds: struct {
+			All int `json:"all"`
+		}{
+			All: 0, // Not provided by Open-Meteo
+		},
+		Pop:  0, // Not provided by Open-Meteo
+		Name: cityName,
+		Dt:   0, // You could parse om.Current.Time to a Unix timestamp if needed
+	}
+}
+
+func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
+	cityGeo, err := GetFirstGeoResult(config.City)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	apiURL := fmt.Sprintf(
+		"https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,weather_code,precipitation,relative_humidity_2m,wind_speed_10m,wind_direction_10m",
+		cityGeo.Latitude,
+		cityGeo.Longitude,
+	)
+
+	resp, err := http.Get(apiURL)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	var openMeteoWeather OpenMeteoWeather
+	if err := json.Unmarshal(body, &openMeteoWeather); err != nil {
+		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	weather := ConvertOpenMeteoToWeather(openMeteoWeather, config.City)
+
+	return &weather, nil
+}
+
 // FetchWeather fetches weather data from the OpenWeatherMap API
 func FetchWeather(config Config) (*Weather, error) {
 	// URL encode the city parameter
@@ -84,25 +205,8 @@ func FetchWeather(config Config) (*Weather, error) {
 
 	if config.Provider == ProviderOpenMeteo {
 
-		cityGeo, err := GetFirstGeoResult(encodedCity)
-		if err != nil {
-			fmt.Println("Error:", err)
-		}
-
-		apiURL := fmt.Sprintf(
-			"https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,weather_code,precipitation,relative_humidity_2m,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit",
-			cityGeo.Latitude,
-			cityGeo.Longitude,
-		)
-
-		resp, err := http.Get(apiURL)
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read response body: %w", err)
-		}
-
-		fmt.Print(string(body))
+		weather, nil := FetchWeatherOpenMeteo(config)
+		return weather, nil
 
 	}
 
