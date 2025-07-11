@@ -31,11 +31,6 @@ type Flags struct {
 	Help    bool
 }
 
-const (
-	ProviderOpenWeather = "OpenWeatherApi"
-	ProviderOpenMeteo   = "OpenMeteo"
-)
-
 // DefaultConfig returns a new Config with default values
 func DefaultConfig() Config {
 	return Config{
