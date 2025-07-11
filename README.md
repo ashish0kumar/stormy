@@ -38,6 +38,12 @@ partly because I enjoy building clean CLI tools.
 - Go 1.19 or higher
 - An API key from [OpenWeatherMap](https://openweathermap.org/api)
 
+### Via `go install`
+
+```bash
+go install github.com/ashish0kumar/stormy@latest
+```
+
 ### Build from Source
 
 ```bash
@@ -48,7 +54,7 @@ cd stormy
 # Build the application
 go build
 
-# Move to a directory in your PATH (optional)
+# Move to a directory in your PATH
 sudo mv stormy /usr/local/bin/
 ```
 
