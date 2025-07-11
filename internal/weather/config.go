@@ -10,8 +10,11 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+// Supported weather providers
+
 // Config holds the application configuration
 type Config struct {
+	Provider     string `toml:"provider"`
 	ApiKey       string `toml:"api_key"`
 	City         string `toml:"city"`
 	Units        string `toml:"units"`
@@ -28,9 +31,15 @@ type Flags struct {
 	Help    bool
 }
 
+const (
+	ProviderOpenWeather = "OpenWeatherApi"
+	ProviderOpenMeteo   = "OpenMeteo"
+)
+
 // DefaultConfig returns a new Config with default values
 func DefaultConfig() Config {
 	return Config{
+		Provider:     ProviderOpenMeteo,
 		ApiKey:       "",
 		City:         "",
 		Units:        "metric",
@@ -70,6 +79,13 @@ func GetConfigPath() string {
 
 // ValidateConfig checks if the config is valid
 func ValidateConfig(config *Config) {
+
+	// Validate provider
+	if config.Provider != ProviderOpenWeather && config.Provider != ProviderOpenMeteo {
+		fmt.Fprintln(os.Stderr, "Warning: Invalid provider in config. Using 'OpenMeteo' as default.")
+		config.Provider = ProviderOpenMeteo
+	}
+
 	// Validate units
 	validUnits := map[string]bool{
 		"metric":   true,
@@ -80,6 +96,11 @@ func ValidateConfig(config *Config) {
 	if !validUnits[config.Units] {
 		fmt.Fprintln(os.Stderr, "Warning: Invalid units in config. Using 'metric' as default.")
 		config.Units = "metric"
+	}
+
+	// Validate API key requirement
+	if config.Provider == ProviderOpenWeather && config.ApiKey == "" {
+		fmt.Fprintln(os.Stderr, "Warning: 'api_key' is required for OpenWeatherApi provider.")
 	}
 }
 
@@ -138,6 +159,9 @@ func ReadConfig() Config {
 
 		if err := toml.Unmarshal(data, &partialConfig); err == nil {
 			// Apply any valid values from partial config
+			if provider, ok := partialConfig["provider"].(string); ok {
+				defaultConfig.Provider = provider
+			}
 			if apiKey, ok := partialConfig["api_key"].(string); ok {
 				defaultConfig.ApiKey = apiKey
 			}
