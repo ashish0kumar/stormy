@@ -24,19 +24,21 @@ partly because I enjoy building clean CLI tools.
 
 ## Features
 
+- Multiple weather providers: OpenMeteo (default, no API key required) and OpenWeatherMap
 - Current weather conditions with ASCII art representation
 - Temperature, wind, humidity, and precipitation information
 - Customizable units (metric, imperial, standard)
 - Local configuration file
 - Color support for terminals
 - Compact display mode
+- Works out of the box with OpenMeteo
 
 ## Installation
 
 ### Prerequisites
 
 - Go 1.19 or higher
-- An API key from [OpenWeatherMap](https://openweathermap.org/api)
+- **Optional:** An API key from [OpenWeatherMap](https://openweathermap.org/api)
 
 ### Via `go install`
 
@@ -67,6 +69,7 @@ sudo mv stormy /usr/local/bin/
 
 ### Configuration Options
 
+- `provider`: Weather data provider ("`OpenMeteo`" or "`OpenWeatherMap`"). Defaults to "`OpenMeteo`".
 - `api_key`: Your OpenWeatherMap API key.
 - `city`: The city for which to fetch weather data.
 - `units`: Units for temperature and wind speed (`metric`, `imperial` or
@@ -77,8 +80,23 @@ sudo mv stormy /usr/local/bin/
 
 ### Example Config
 
+#### Default Configuration (OpenMeteo - No API Key Required)
+
 ```toml
-api_key = "your_api_key"
+provider = "OpenMeteo"
+api_key = ""
+city = "New Delhi"
+units = "metric"
+showcityname = false
+use_colors = false
+compact = false
+```
+
+#### OpenWeatherMap Configuration
+
+```toml
+provider = "OpenWeatherMap"
+api_key = "your_openweathermap_api_key"
 city = "New Delhi"
 units = "metric"
 showcityname = false
@@ -115,7 +133,7 @@ stormy --help
 
 ## Acknowledgements
 
-- [OpenWeatherMap](https://openweathermap.org/) for providing weather data
+- [OpenWeatherMap](https://openweathermap.org/) and [Open-Meteo](https://open-meteo.com/) for providing weather data
 - [rainy](https://github.com/liveslol/rainy) for the overall idea, structure and
   design of the project
 - [wttr.in](https://github.com/chubin/wttr.in?tab=readme-ov-file) for the ASCII
