@@ -68,7 +68,7 @@ func DisplayWeather(weather *Weather, config Config) {
 		windSpeedUnits = "km/h"
 		tempUnit = "°C"
 
-		// Convert wind spped for OpenWeatherMap provider
+		// Convert wind speed for OpenWeatherMap provider
 		if config.Provider == ProviderOpenWeatherMap {
 			windSpeed *= MpsToKmph // m/s to km/h
 		}
