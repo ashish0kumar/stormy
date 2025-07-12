@@ -198,17 +198,9 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 	return &weather, nil
 }
 
-// FetchWeather fetches weather data from the OpenWeatherMap API
-func FetchWeather(config Config) (*Weather, error) {
+func FetchWeatherOpenWeatherMap(config Config) (*Weather, error) {
 	// URL encode the city parameter
 	encodedCity := url.QueryEscape(config.City)
-
-	if config.Provider == ProviderOpenMeteo {
-
-		weather, nil := FetchWeatherOpenMeteo(config)
-		return weather, nil
-
-	}
 
 	apiURL := fmt.Sprintf(
 		"https://api.openweathermap.org/data/2.5/weather?q=%s&units=%s&APPID=%s",
@@ -242,4 +234,15 @@ func FetchWeather(config Config) (*Weather, error) {
 	}
 
 	return &weather, nil
+}
+
+// FetchWeather fetches weather data from the OpenWeatherMap API
+func FetchWeather(config Config) (*Weather, error) {
+	if config.Provider == ProviderOpenMeteo {
+		weather, nil := FetchWeatherOpenMeteo(config)
+		return weather, nil
+	} else {
+		weather, nil := FetchWeatherOpenWeatherMap(config)
+		return weather, nil
+	}
 }
