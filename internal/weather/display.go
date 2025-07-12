@@ -8,6 +8,16 @@ import (
 	"github.com/fatih/color"
 )
 
+const (
+	MpsToMph  = 2.23694
+	KmphToMph = 0.621371
+	MpsToKmph = 3.6
+)
+
+func celsiusToFahrenheit(c float64) float64 {
+	return c*9/5 + 32
+}
+
 // getWindDirectionSymbol converts wind degrees to a direction symbol
 func getWindDirectionSymbol(degrees int) string {
 	directions := []string{"↑", "↗", "→", "↘", "↓", "↙", "←", "↖"}
@@ -32,22 +42,36 @@ func DisplayWeather(weather *Weather, config Config) {
 	}
 
 	// Determine units based on config
-	windSpeedUnits := "m/s"
+	windSpeedUnits := "km/h"
 	tempUnit := "°C"
 
-	// Convert wind speed to km/h for metric
+	// Convert wind speed based on provider and units
 	windSpeed := weather.Wind.Speed
+	temperature := weather.Main.Temp
+
 	switch config.Units {
-	case "metric":
-		windSpeed *= 3.6 // m/s to km/h
-		windSpeedUnits = "km/h"
-		tempUnit = "°C"
 	case "imperial":
 		windSpeedUnits = "mph"
 		tempUnit = "°F"
-	case "standard":
-		windSpeedUnits = "m/s"
-		tempUnit = "K"
+
+		// Convert temperature for both providers
+		temperature = celsiusToFahrenheit(temperature)
+
+		// Convert wind speed based on provider
+		if config.Provider == ProviderOpenWeatherMap {
+			windSpeed *= MpsToMph // m/s to mph
+		} else {
+			windSpeed *= KmphToMph // km/h to mph
+		}
+
+	default:
+		windSpeedUnits = "km/h"
+		tempUnit = "°C"
+
+		// Convert wind speed for OpenWeatherMap provider
+		if config.Provider == ProviderOpenWeatherMap {
+			windSpeed *= MpsToKmph // m/s to km/h
+		}
 	}
 
 	// Format precipitation info
@@ -84,7 +108,7 @@ func DisplayWeather(weather *Weather, config Config) {
 		values = append(values, description)
 
 		labels = append(labels, "Temp ")
-		values = append(values, fmt.Sprintf("%.1f%s", weather.Main.Temp, tempUnit))
+		values = append(values, fmt.Sprintf("%.1f%s", temperature, tempUnit))
 
 		labels = append(labels, "Wind ")
 		values = append(values, fmt.Sprintf("%.1f %s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg)))
@@ -98,7 +122,7 @@ func DisplayWeather(weather *Weather, config Config) {
 	} else {
 		// Compact mode doesn't use labels in the same way
 		weatherDisplay := description
-		tempDisplay := fmt.Sprintf("%.1f%s", weather.Main.Temp, tempUnit)
+		tempDisplay := fmt.Sprintf("%.1f%s", temperature, tempUnit)
 		windDisplay := fmt.Sprintf("%.1f%s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg))
 		humidityDisplay := fmt.Sprintf("%d%%", weather.Main.Humidity)
 		precipDisplay := fmt.Sprintf("%.1fmm | %d%%", precipMM, popPercent)

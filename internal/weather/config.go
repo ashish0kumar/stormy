@@ -10,8 +10,6 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-// Supported weather providers
-
 // Config holds the application configuration
 type Config struct {
 	Provider     string `toml:"provider"`
@@ -74,7 +72,6 @@ func GetConfigPath() string {
 
 // ValidateConfig checks if the config is valid
 func ValidateConfig(config *Config) {
-
 	// Validate provider
 	if config.Provider != ProviderOpenWeatherMap && config.Provider != ProviderOpenMeteo {
 		fmt.Fprintln(os.Stderr, "Warning: Invalid provider in config. Using 'OpenMeteo' as default.")
@@ -85,7 +82,6 @@ func ValidateConfig(config *Config) {
 	validUnits := map[string]bool{
 		"metric":   true,
 		"imperial": true,
-		"standard": true,
 	}
 
 	if !validUnits[config.Units] {
@@ -95,7 +91,7 @@ func ValidateConfig(config *Config) {
 
 	// Validate API key requirement
 	if config.Provider == ProviderOpenWeatherMap && config.ApiKey == "" {
-		fmt.Fprintln(os.Stderr, "Warning: 'api_key' is required for OpenWeatherApi provider.")
+		fmt.Fprintln(os.Stderr, "Warning: 'api_key' is required for OpenWeatherMap provider.")
 	}
 }
 
@@ -201,7 +197,7 @@ func ParseFlags() Flags {
 	flags := Flags{}
 
 	flag.StringVar(&flags.City, "city", "", "City to get weather for")
-	flag.StringVar(&flags.Units, "units", "", "Units (metric, imperial, standard)")
+	flag.StringVar(&flags.Units, "units", "", "Units (metric, imperial)")
 	flag.BoolVar(&flags.Compact, "compact", false, "Compact display mode")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
 

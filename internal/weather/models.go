@@ -59,7 +59,6 @@ type GeoResult struct {
 	Name      string  `json:"name"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
-	// ...add more fields if needed
 }
 
 type GeoResponse struct {
@@ -126,7 +125,6 @@ func WeatherCodeToSentence(code int) string {
 }
 
 func ConvertOpenMeteoToWeather(om OpenMeteoWeather, cityName string) Weather {
-
 	return Weather{
 		Weather: []struct {
 			ID          int    `json:"id"`
@@ -135,7 +133,7 @@ func ConvertOpenMeteoToWeather(om OpenMeteoWeather, cityName string) Weather {
 		}{
 			{
 				ID:          om.Current.WeatherCode,
-				Main:        WeatherCodeToSentence(om.Current.WeatherCode), // Open-Meteo does not provide main/description, you may map codes to strings
+				Main:        WeatherCodeToSentence(om.Current.WeatherCode),
 				Description: WeatherCodeToSentence(om.Current.WeatherCode),
 			},
 		},
@@ -178,20 +176,10 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 		return nil, fmt.Errorf("geocoding failed: %w", err)
 	}
 
-	tempUnit := "celsius"
-	windUnit := "kmh"
-
-	if config.Units == "imperial" {
-		tempUnit = "fahrenheit"
-		windUnit = "mph"
-	}
-
 	apiURL := fmt.Sprintf(
-		"https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,weather_code,precipitation,relative_humidity_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=%s&temperature_unit=%s",
+		"https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,weather_code,precipitation,relative_humidity_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=kmh&temperature_unit=celsius",
 		cityGeo.Latitude,
 		cityGeo.Longitude,
-		windUnit,
-		tempUnit,
 	)
 
 	resp, err := http.Get(apiURL)
@@ -220,9 +208,8 @@ func FetchWeatherOpenWeatherMap(config Config) (*Weather, error) {
 	encodedCity := url.QueryEscape(config.City)
 
 	apiURL := fmt.Sprintf(
-		"https://api.openweathermap.org/data/2.5/weather?q=%s&units=%s&APPID=%s",
+		"https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&APPID=%s",
 		encodedCity,
-		config.Units,
 		config.ApiKey,
 	)
 
@@ -253,7 +240,7 @@ func FetchWeatherOpenWeatherMap(config Config) (*Weather, error) {
 	return &weather, nil
 }
 
-// FetchWeather fetches weather data from the OpenWeatherMap API
+// FetchWeather fetches weather data from the configured provider
 func FetchWeather(config Config) (*Weather, error) {
 	if config.Provider == ProviderOpenMeteo {
 		return FetchWeatherOpenMeteo(config)
