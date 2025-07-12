@@ -175,10 +175,20 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 		fmt.Println("Error:", err)
 	}
 
+	tempUnit := "celsius"
+	windUnit := "kmh"
+
+	if config.Units == "imperial" {
+		tempUnit = "fahrenheit"
+		windUnit = "mph"
+	}
+
 	apiURL := fmt.Sprintf(
-		"https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,weather_code,precipitation,relative_humidity_2m,wind_speed_10m,wind_direction_10m",
+		"https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&current=temperature_2m,weather_code,precipitation,relative_humidity_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=%s&temperature_unit=%s",
 		cityGeo.Latitude,
 		cityGeo.Longitude,
+		windUnit,
+		tempUnit,
 	)
 
 	resp, err := http.Get(apiURL)
