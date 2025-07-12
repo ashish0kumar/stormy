@@ -18,7 +18,7 @@ func main() {
 	weather.ApplyFlags(&config, flags)
 
 	// Check if API key and city are set
-	if config.Provider == weather.ProviderOpenWeather && config.ApiKey == "" {
+	if config.Provider == weather.ProviderOpenWeatherMap && config.ApiKey == "" {
 		fmt.Fprintln(os.Stderr, "Error: API key must be set in the config file when using OpenWeatherMap")
 		fmt.Fprintln(os.Stderr, "Get your API key from https://openweathermap.org/api")
 		fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())

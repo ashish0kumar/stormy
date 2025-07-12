@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	ProviderOpenWeather = "OpenWeatherApi"
-	ProviderOpenMeteo   = "OpenMeteo"
+	ProviderOpenWeatherMap = "OpenWeatherMap"
+	ProviderOpenMeteo      = "OpenMeteo"
 )
 
 type OpenMeteoWeather struct {

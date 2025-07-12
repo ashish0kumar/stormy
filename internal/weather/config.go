@@ -76,7 +76,7 @@ func GetConfigPath() string {
 func ValidateConfig(config *Config) {
 
 	// Validate provider
-	if config.Provider != ProviderOpenWeather && config.Provider != ProviderOpenMeteo {
+	if config.Provider != ProviderOpenWeatherMap && config.Provider != ProviderOpenMeteo {
 		fmt.Fprintln(os.Stderr, "Warning: Invalid provider in config. Using 'OpenMeteo' as default.")
 		config.Provider = ProviderOpenMeteo
 	}
@@ -94,7 +94,7 @@ func ValidateConfig(config *Config) {
 	}
 
 	// Validate API key requirement
-	if config.Provider == ProviderOpenWeather && config.ApiKey == "" {
+	if config.Provider == ProviderOpenWeatherMap && config.ApiKey == "" {
 		fmt.Fprintln(os.Stderr, "Warning: 'api_key' is required for OpenWeatherApi provider.")
 	}
 }
