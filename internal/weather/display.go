@@ -8,6 +8,16 @@ import (
 	"github.com/fatih/color"
 )
 
+const (
+	MpsToMph  = 2.23694
+	KmphToMph = 0.621371
+	MpsToKmph = 3.6
+)
+
+func celsiusToFahrenheit(c float64) float64 {
+	return c*9/5 + 32
+}
+
 // getWindDirectionSymbol converts wind degrees to a direction symbol
 func getWindDirectionSymbol(degrees int) string {
 	directions := []string{"↑", "↗", "→", "↘", "↓", "↙", "←", "↖"}
@@ -44,22 +54,23 @@ func DisplayWeather(weather *Weather, config Config) {
 		windSpeedUnits = "mph"
 		tempUnit = "°F"
 
-		// Convert temperature to F for both providers (both return Celsius)
-		temperature = temperature*9/5 + 32
+		// Convert temperature for both providers
+		temperature = celsiusToFahrenheit(temperature)
 
-		// Convert wind speed to mph based on provider
+		// Convert wind speed based on provider
 		if config.Provider == ProviderOpenWeatherMap {
-			windSpeed *= 2.23694 // m/s to mph
+			windSpeed *= MpsToMph // m/s to mph
 		} else {
-			windSpeed *= 0.621371 // km/h to mph
+			windSpeed *= KmphToMph // km/h to mph
 		}
 
 	default:
 		windSpeedUnits = "km/h"
 		tempUnit = "°C"
 
+		// Convert wind spped for OpenWeatherMap provider
 		if config.Provider == ProviderOpenWeatherMap {
-			windSpeed *= 3.6 // m/s to km/h
+			windSpeed *= MpsToKmph // m/s to km/h
 		}
 	}
 
