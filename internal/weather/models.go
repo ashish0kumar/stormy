@@ -170,9 +170,12 @@ func ConvertOpenMeteoToWeather(om OpenMeteoWeather, cityName string) Weather {
 }
 
 func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
-	cityGeo, err := GetFirstGeoResult(config.City)
+	// URL-encode the city name before passing to geocoding
+	encodedCity := url.QueryEscape(config.City)
+
+	cityGeo, err := GetFirstGeoResult(encodedCity)
 	if err != nil {
-		fmt.Println("Error:", err)
+		return nil, fmt.Errorf("geocoding failed: %w", err)
 	}
 
 	tempUnit := "celsius"
@@ -192,6 +195,10 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 	)
 
 	resp, err := http.Get(apiURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch weather data: %w", err)
+	}
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -249,10 +256,8 @@ func FetchWeatherOpenWeatherMap(config Config) (*Weather, error) {
 // FetchWeather fetches weather data from the OpenWeatherMap API
 func FetchWeather(config Config) (*Weather, error) {
 	if config.Provider == ProviderOpenMeteo {
-		weather, nil := FetchWeatherOpenMeteo(config)
-		return weather, nil
+		return FetchWeatherOpenMeteo(config)
 	} else {
-		weather, nil := FetchWeatherOpenWeatherMap(config)
-		return weather, nil
+		return FetchWeatherOpenWeatherMap(config)
 	}
 }
