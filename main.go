@@ -17,6 +17,14 @@ func main() {
 	// Override config with command line flags if provided
 	weather.ApplyFlags(&config, flags)
 
+	// Check if city is set
+	if config.City == "" {
+		fmt.Fprintln(os.Stderr, "Error: City must be set in the config file or via command line flags")
+		fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
+		fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
+		os.Exit(1)
+	}
+
 	// Check if API key and city are set
 	if config.Provider == weather.ProviderOpenWeatherMap && config.ApiKey == "" {
 		fmt.Fprintln(os.Stderr, "Error: API key must be set in the config file when using OpenWeatherMap")
