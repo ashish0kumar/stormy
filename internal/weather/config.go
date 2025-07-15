@@ -43,11 +43,12 @@ func DefaultConfig() Config {
 	}
 }
 
-// GetConfigPath returns the path to the config file
+// GetConfigPath returns the path to the config file following XDG Base Directory Specification
 func GetConfigPath() string {
 	var configDir string
 
 	if runtime.GOOS == "windows" {
+		// Windows: Use AppData directory
 		dir, err := os.UserConfigDir()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Failed to get config directory:", err)
@@ -56,16 +57,25 @@ func GetConfigPath() string {
 				fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
 				return ""
 			}
-			return filepath.Join(dir, "stormy", "stormy.toml")
+			configDir = filepath.Join(dir, "stormy")
+		} else {
+			configDir = filepath.Join(dir, "stormy")
 		}
-		configDir = filepath.Join(dir, "stormy")
 	} else {
-		dir, err := os.UserHomeDir()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
-			return ""
+		// Linux/macOS: Follow XDG Base Directory Specification
+		xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
+		if xdgConfigHome != "" {
+			// Use XDG_CONFIG_HOME if set
+			configDir = filepath.Join(xdgConfigHome, "stormy")
+		} else {
+			// Fall back to ~/.config/stormy
+			homeDir, err := os.UserHomeDir()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
+				return ""
+			}
+			configDir = filepath.Join(homeDir, ".config", "stormy")
 		}
-		configDir = filepath.Join(dir, ".config", "stormy")
 	}
 
 	return filepath.Join(configDir, "stormy.toml")
