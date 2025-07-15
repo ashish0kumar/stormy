@@ -27,6 +27,7 @@ type Flags struct {
 	Units   string
 	Compact bool
 	Help    bool
+	Version bool
 }
 
 // DefaultConfig returns a new Config with default values
@@ -200,6 +201,7 @@ func ParseFlags() Flags {
 	flag.StringVar(&flags.Units, "units", "", "Units (metric, imperial)")
 	flag.BoolVar(&flags.Compact, "compact", false, "Compact display mode")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
+	flag.BoolVar(&flags.Version, "version", false, "Show version information")
 
 	// Add usage information
 	flag.Usage = func() {
