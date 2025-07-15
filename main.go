@@ -7,9 +7,18 @@ import (
 	"github.com/ashish0kumar/stormy/internal/weather"
 )
 
+// version is set during build time using -ldflags
+var version = "dev"
+
 func main() {
 	// Parse command line flags
 	flags := weather.ParseFlags()
+
+	// Handle version flag
+	if flags.Version {
+		fmt.Printf("stormy version %s\n", version)
+		os.Exit(0)
+	}
 
 	// Read/create config
 	config := weather.ReadConfig()
