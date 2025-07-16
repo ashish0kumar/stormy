@@ -62,10 +62,12 @@ sudo mv stormy /usr/local/bin/
 
 ## Configuration
 
-`stormy` will create a default configuration file on first run:
+`stormy` follows the XDG Base Directory Specification for configuration files and will create a default configuration file on first run:
 
 - Linux/macOS: `~/.config/stormy/stormy.toml`
 - Windows: `%APPDATA%\stormy\stormy.toml`
+- Custom: Set `XDG_CONFIG_HOME` environment variable to override the default location
+
 
 ### Configuration Options
 
@@ -118,6 +120,9 @@ stormy --units imperial
 
 # Use compact display mode
 stormy --compact
+
+# Show version
+stormy --version
 
 # Show help
 stormy --help
