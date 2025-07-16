@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 
 	"github.com/BurntSushi/toml"
 )
@@ -18,6 +19,7 @@ type Config struct {
 	Units        string `toml:"units"`
 	ShowCityName bool   `toml:"showcityname"`
 	UseColors    bool   `toml:"use_colors"`
+	LiveMode     bool   `toml:"live_mode"`
 	Compact      bool   `toml:"compact"`
 }
 
@@ -39,6 +41,7 @@ func DefaultConfig() Config {
 		Units:        "metric",
 		ShowCityName: false,
 		UseColors:    false,
+		LiveMode:     false,
 		Compact:      false,
 	}
 }
@@ -178,6 +181,12 @@ func ReadConfig() Config {
 			}
 			if useColors, ok := partialConfig["use_colors"].(bool); ok {
 				defaultConfig.UseColors = useColors
+			}
+			if liveMode, ok := partialConfig["live_mode"].(bool); ok {
+				defaultConfig.LiveMode = liveMode
+			}
+			if compact, ok := partialConfig["compact"].(bool); ok {
+				defaultConfig.Compact = compact
 			}
 		}
 

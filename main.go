@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/ashish0kumar/stormy/internal/weather"
+	"github.com/k0kubun/go-ansi"
 )
 
 // version is set during build time using -ldflags
@@ -42,6 +44,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
 	}
 
+	fetchAndDisplay(config, false)
+}
+
+// fetchAndDisplay fetches weather data and displays it according to the given configuration.
+// clear determines whether the screen should be cleared before displaying updated information.
+func fetchAndDisplay(config weather.Config, clear bool) {
 	// Fetch weather data
 	weatherData, err := weather.FetchWeather(config)
 	if err != nil {
@@ -50,6 +58,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Clear screen in live mode
+	if clear {
+		_, _ = ansi.Printf("\x1b[%dA\x1b[J", 7) // maximum number of displayed lines
+	}
+
 	// Display the weather
 	weather.DisplayWeather(weatherData, config)
+
+	// Loop in live mode
+	if !config.LiveMode {
+		return
+	}
+	time.Sleep(15 * time.Second)
+	fetchAndDisplay(config, true)
 }
