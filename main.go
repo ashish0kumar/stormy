@@ -19,7 +19,7 @@ func init() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
-		// Reset cursor visibility for live mode
+		// reset cursor visibility for live mode
 		_, _ = ansi.Print("\x1b[?25h")
 		os.Exit(1)
 	}()
