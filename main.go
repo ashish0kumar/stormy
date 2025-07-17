@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/ashish0kumar/stormy/internal/weather"
@@ -11,6 +13,17 @@ import (
 
 // version is set during build time using -ldflags
 var version = "dev"
+
+func init() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		// Reset cursor visibility for live mode
+		_, _ = ansi.Print("\x1b[?25h")
+		os.Exit(1)
+	}()
+}
 
 func main() {
 	// Parse command line flags
@@ -69,6 +82,10 @@ func fetchAndDisplay(config weather.Config, clear bool) {
 	// Loop in live mode
 	if !config.LiveMode {
 		return
+	}
+	if !clear {
+		// hide cursor on live mode startup
+		_, _ = ansi.Print("\x1b[?25l")
 	}
 	time.Sleep(15 * time.Second)
 	fetchAndDisplay(config, true)
