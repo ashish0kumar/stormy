@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 
 	"github.com/BurntSushi/toml"
 )
@@ -92,12 +93,9 @@ func ValidateConfig(config *Config) {
 	}
 
 	// Validate units
-	validUnits := map[string]bool{
-		"metric":   true,
-		"imperial": true,
-	}
+	validUnits := []string{"metric", "imperial"}
 
-	if !validUnits[config.Units] {
+	if !slices.Contains(validUnits, config.Units) {
 		fmt.Fprintln(os.Stderr, "Warning: Invalid units in config. Using 'metric' as default.")
 		config.Units = "metric"
 	}
@@ -135,8 +133,7 @@ func ReadConfig() Config {
 		}
 		defer file.Close()
 
-		encoder := toml.NewEncoder(file)
-		if err := encoder.Encode(defaultConfig); err != nil {
+		if err := toml.NewEncoder(file).Encode(defaultConfig); err != nil {
 			fmt.Fprintln(os.Stderr, "Failed to write default config:", err)
 			return defaultConfig
 		}
@@ -159,7 +156,7 @@ func ReadConfig() Config {
 
 		// Try to load partial config
 		defaultConfig := DefaultConfig()
-		var partialConfig map[string]interface{}
+		var partialConfig map[string]any
 
 		if err := toml.Unmarshal(data, &partialConfig); err == nil {
 			// Apply any valid values from partial config
@@ -197,8 +194,7 @@ func ReadConfig() Config {
 		}
 		defer file.Close()
 
-		encoder := toml.NewEncoder(file)
-		if err := encoder.Encode(defaultConfig); err != nil {
+		if err := toml.NewEncoder(file).Encode(defaultConfig); err != nil {
 			fmt.Fprintln(os.Stderr, "Failed to write merged config:", err)
 		}
 
