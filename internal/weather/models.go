@@ -2,16 +2,20 @@ package weather
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
 	ProviderOpenWeatherMap = "OpenWeatherMap"
 	ProviderOpenMeteo      = "OpenMeteo"
 )
+
+var ErrUnsupportedQuery = errors.New("unsupported query")
 
 type OpenMeteoWeather struct {
 	Latitude  float64 `json:"latitude"`
@@ -173,6 +177,9 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 
 	cityGeo, err := GetFirstGeoResult(encodedCity)
 	if err != nil {
+		if strings.Contains(config.City, " ") || strings.Contains(config.City, ",") {
+			return nil, fmt.Errorf("geocoding failed - %w: %w", ErrUnsupportedQuery, err)
+		}
 		return nil, fmt.Errorf("geocoding failed: %w", err)
 	}
 

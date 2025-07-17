@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -67,7 +68,11 @@ func fetchAndDisplay(config weather.Config, clear bool) {
 	weatherData, err := weather.FetchWeather(config)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to fetch weather data: %v\n", err)
-		fmt.Fprintln(os.Stderr, "Please check your internet connection and API key.")
+		if errors.Is(err, weather.ErrUnsupportedQuery) {
+			fmt.Fprintln(os.Stderr, "Detailed queries are not supported by OpenMeteo, try using other providers.")
+		} else {
+			fmt.Fprintln(os.Stderr, "Please check your internet connection and API key.")
+		}
 		os.Exit(1)
 	}
 
