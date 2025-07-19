@@ -205,7 +205,7 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 		return nil, fmt.Errorf("failed to parse JSON: %w", err)
 	}
 
-	weather := ConvertOpenMeteoToWeather(openMeteoWeather, config.City)
+	weather := ConvertOpenMeteoToWeather(openMeteoWeather, cityGeo.Name)
 
 	return &weather, nil
 }
