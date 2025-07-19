@@ -40,7 +40,7 @@ func DefaultConfig() Config {
 		City:         "",
 		Units:        "metric",
 		ShowCityName: false,
-		UseColors:    false,
+		UseColors:    true,
 		LiveMode:     false,
 		Compact:      false,
 	}
