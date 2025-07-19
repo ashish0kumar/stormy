@@ -9,7 +9,9 @@ import (
 	"time"
 
 	"github.com/ashish0kumar/stormy/internal/weather"
+	"github.com/fatih/color"
 	"github.com/k0kubun/go-ansi"
+	"golang.org/x/term"
 )
 
 // version is set during build time using -ldflags
@@ -17,13 +19,65 @@ var version = "dev"
 
 func init() {
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	go func() {
-		<-c
+		stop := <-c
 		// reset cursor visibility for live mode
 		_, _ = ansi.Print("\x1b[?25h")
-		os.Exit(1)
+		switch stop {
+		case os.Interrupt, syscall.SIGTERM:
+			_, _ = fmt.Fprintf(
+				os.Stderr, "\n\n[%s] Program interrupted. Bye!\n", color.New(color.FgRed).SprintFunc()("x"),
+			)
+			os.Exit(1)
+		case syscall.SIGQUIT:
+			fmt.Printf("\n\n[%s] Stopping now, bye!\n", color.New(color.FgGreen).SprintFunc()("✓"))
+			os.Exit(0)
+		}
 	}()
+}
+
+func listenForQuit(stop chan struct{}) {
+	var didQuit, didCtrlC bool
+	// Switch stdin into 'raw' mode
+	oldState, errRaw := term.MakeRaw(int(os.Stdin.Fd()))
+	if errRaw != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Error setting raw mode: %v\n", errRaw)
+		return
+	}
+	defer func(fd int, state *term.State) {
+		_ = term.Restore(fd, state)
+		if didQuit {
+			_ = syscall.Kill(syscall.Getpid(), syscall.SIGQUIT)
+		}
+		if didCtrlC {
+			_ = syscall.Kill(syscall.Getpid(), syscall.SIGINT) // same as os.Interrupt
+		}
+	}(int(os.Stdin.Fd()), oldState)
+
+	buffer := make([]byte, 1)
+	for {
+		select {
+		case <-stop:
+			_, _ = fmt.Fprintln(os.Stderr, "QUITTING")
+			return
+		default:
+			n, err := os.Stdin.Read(buffer)
+			if err != nil || n == 0 {
+				continue
+			}
+
+			char := buffer[0]
+			if char == 'q' || char == 'Q' {
+				didQuit = true
+				return
+			}
+			if char == 3 { // Ctrl+C
+				didCtrlC = true
+				return
+			}
+		}
+	}
 }
 
 func main() {
@@ -62,8 +116,8 @@ func main() {
 }
 
 // fetchAndDisplay fetches weather data and displays it according to the given configuration.
-// clear determines whether the screen should be cleared before displaying updated information.
-func fetchAndDisplay(config weather.Config, clear bool) {
+// clearDisplay determines whether the screen should be cleared before displaying updated information.
+func fetchAndDisplay(config weather.Config, clearDisplay bool) {
 	// Fetch weather data
 	weatherData, err := weather.FetchWeather(config)
 	if err != nil {
@@ -77,7 +131,7 @@ func fetchAndDisplay(config weather.Config, clear bool) {
 	}
 
 	// Clear screen in live mode
-	if clear {
+	if clearDisplay {
 		_, _ = ansi.Printf("\x1b[%dA\x1b[J", 7) // maximum number of displayed lines
 	}
 
@@ -88,10 +142,14 @@ func fetchAndDisplay(config weather.Config, clear bool) {
 	if !config.LiveMode {
 		return
 	}
-	if !clear {
+	if !clearDisplay {
 		// hide cursor on live mode startup
 		_, _ = ansi.Print("\x1b[?25l")
 	}
+	// handle q press
+	stop := make(chan struct{})
+	go listenForQuit(stop)
 	time.Sleep(15 * time.Second)
+	stop <- struct{}{}
 	fetchAndDisplay(config, true)
 }
