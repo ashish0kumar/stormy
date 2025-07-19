@@ -62,8 +62,8 @@ func main() {
 }
 
 // fetchAndDisplay fetches weather data and displays it according to the given configuration.
-// clearDisplay determines whether the screen should be cleared before displaying updated information.
-func fetchAndDisplay(config weather.Config, clearDisplay bool) {
+// clear determines whether the screen should be cleared before displaying updated information.
+func fetchAndDisplay(config weather.Config, clear bool) {
 	// Fetch weather data
 	weatherData, err := weather.FetchWeather(config)
 	if err != nil {
@@ -77,7 +77,7 @@ func fetchAndDisplay(config weather.Config, clearDisplay bool) {
 	}
 
 	// Clear screen in live mode
-	if clearDisplay {
+	if clear {
 		_, _ = ansi.Printf("\x1b[%dA\x1b[J", 7) // maximum number of displayed lines
 	}
 
@@ -88,7 +88,7 @@ func fetchAndDisplay(config weather.Config, clearDisplay bool) {
 	if !config.LiveMode {
 		return
 	}
-	if !clearDisplay {
+	if !clear {
 		// hide cursor on live mode startup
 		_, _ = ansi.Print("\x1b[?25l")
 	}
