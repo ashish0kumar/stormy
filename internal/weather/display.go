@@ -28,8 +28,7 @@ func getWindDirectionSymbol(degrees int) string {
 // DisplayWeather renders the weather data with ASCII art
 func DisplayWeather(weather *Weather, config Config) {
 	// Get main weather condition
-	var mainWeather string
-	var description string
+	var mainWeather, description string
 	var weatherID int
 	if len(weather.Weather) > 0 {
 		mainWeather = weather.Weather[0].Main
@@ -42,8 +41,7 @@ func DisplayWeather(weather *Weather, config Config) {
 	}
 
 	// Determine units based on config
-	windSpeedUnits := "km/h"
-	tempUnit := "°C"
+	var windSpeedUnits, tempUnit string
 
 	// Convert wind speed based on provider and units
 	windSpeed := weather.Wind.Speed
@@ -85,7 +83,8 @@ func DisplayWeather(weather *Weather, config Config) {
 		popPercent = int(math.Round(weather.Pop * 100))
 	}
 
-	var labels, values []string
+	labels := make([]string, 0, 6)
+	values := make([]string, 0, cap(labels))
 
 	// City name display
 	cityName := weather.Name
@@ -111,14 +110,15 @@ func DisplayWeather(weather *Weather, config Config) {
 		values = append(values, fmt.Sprintf("%.1f%s", temperature, tempUnit))
 
 		labels = append(labels, "Wind ")
-		values = append(values, fmt.Sprintf("%.1f %s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg)))
+		values = append(
+			values, fmt.Sprintf("%.1f %s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg)),
+		)
 
 		labels = append(labels, "Humidity ")
 		values = append(values, fmt.Sprintf("%d%%", weather.Main.Humidity))
 
 		labels = append(labels, "Precip ")
 		values = append(values, fmt.Sprintf("%.1f mm | %d%%", precipMM, popPercent))
-
 	} else {
 		// Compact mode doesn't use labels in the same way
 		weatherDisplay := description
@@ -217,7 +217,7 @@ func displayWeatherArtAligned(mainWeather string, weatherID int, labels, values 
 	}
 
 	// Prepare the text lines
-	var textLines []string
+	textLines := make([]string, 0, len(labels)+2)
 	textLines = append(textLines, "") // Empty line to match icon top spacing
 
 	// Add formatted lines with aligned labels and values
@@ -247,8 +247,10 @@ func displayWeatherArtAligned(mainWeather string, weatherID int, labels, values 
 }
 
 // displayWeatherArtCompact shows ASCII art with compact formatting
-func displayWeatherArtCompact(mainWeather string, weatherID int, cityName, weatherDisplay,
-	tempDisplay, windDisplay, humidityDisplay, precipDisplay string, config Config) {
+func displayWeatherArtCompact(
+	mainWeather string, weatherID int, cityName, weatherDisplay,
+	tempDisplay, windDisplay, humidityDisplay, precipDisplay string, config Config,
+) {
 
 	// Get the weather icon
 	iconLines := getWeatherIcon(mainWeather, weatherID, config.UseColors)
@@ -272,7 +274,7 @@ func displayWeatherArtCompact(mainWeather string, weatherID int, cityName, weath
 	}
 
 	// Prepare the text lines
-	var textLines []string
+	textLines := make([]string, 0, 5)
 	textLines = append(textLines, "") // Empty line to match icon top spacing
 
 	if cityName != "" && config.ShowCityName {
