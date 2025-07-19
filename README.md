@@ -1,12 +1,12 @@
 <h1 align="center">stormy</h1>
 
 <p align="center">
-Minimal, customizable and neofetch-like weather CLI inspired by
+Minimal, customizable, and neofetch-like weather CLI inspired by
 <a href="https://github.com/liveslol/rainy">rainy</a>, written in Go
 </p>
 
 <div align="center">
-<img src="./assets/ss.png" width="70%">
+  <img src="./assets/ss.png" alt="screenshot" width="70%">
 </div>
 
 ---
@@ -62,12 +62,12 @@ sudo mv stormy /usr/local/bin/
 
 ## Configuration
 
-`stormy` follows the XDG Base Directory Specification for configuration files and will create a default configuration file on first run:
+`stormy` follows the XDG Base Directory Specification for configuration files and will create a default configuration
+file on first run:
 
 - Linux/macOS: `~/.config/stormy/stormy.toml`
 - Windows: `%APPDATA%\stormy\stormy.toml`
 - Custom: Set `XDG_CONFIG_HOME` environment variable to override the default location
-
 
 ### Configuration Options
 
@@ -78,11 +78,12 @@ sudo mv stormy /usr/local/bin/
   `standard`).
 - `showcityname`: Whether to display the city name (`true` or `false`).
 - `use_colors`: Enables and disables text colors (`true` or `false`).
+- `live_mode`: Enables the "live" mode — long-running mode with frequent polling, never stops (`true` or `false`).
 - `compact`: Use a more compact display format (`true` or `false`).
 
 ### Example Config
 
-#### Default Configuration (OpenMeteo - No API Key Required)
+#### Default Configuration (OpenMeteo — No API Key Required)
 
 ```toml
 provider = "OpenMeteo"
@@ -91,6 +92,7 @@ city = "New Delhi"
 units = "metric"
 showcityname = false
 use_colors = false
+live_mode = false
 compact = false
 ```
 
@@ -103,6 +105,7 @@ city = "New Delhi"
 units = "metric"
 showcityname = false
 use_colors = false
+live_mode = false
 compact = false
 ```
 
@@ -130,16 +133,16 @@ stormy --help
 
 ## Display Examples
 
-| ![](./assets/base.png)    | ![](./assets/colored.png)  |
-| ------------------------- | -------------------------- |
-| ![](./assets/minimal.png) | ![](./assets/cityname.png) |
-| ![](./assets/1.png)       | ![](./assets/3.png)        |
-| ![](./assets/4.png)       | ![](./assets/2.png)        |
+| ![Base](./assets/base.png)       | ![Colored](./assets/colored.png)    |
+|----------------------------------|-------------------------------------|
+| ![Minimal](./assets/minimal.png) | ![City name](./assets/cityname.png) |
+| ![1](./assets/1.png)             | ![3](./assets/3.png)                |
+| ![4](./assets/4.png)             | ![2](./assets/2.png)                |
 
 ## Acknowledgements
 
 - [OpenWeatherMap](https://openweathermap.org/) and [Open-Meteo](https://open-meteo.com/) for providing weather data
-- [rainy](https://github.com/liveslol/rainy) for the overall idea, structure and
+- [rainy](https://github.com/liveslol/rainy) for the overall idea, structure, and
   design of the project
 - [wttr.in](https://github.com/chubin/wttr.in?tab=readme-ov-file) for the ASCII
   weather icons
@@ -147,13 +150,15 @@ stormy --help
 <br>
 
 <p align="center">
-	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" />
+  <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" alt="catppuccin" />
 </p>
 
 <p align="center">
-        <i><code>&copy 2025-present <a href="https://github.com/ashish0kumar">Ashish Kumar</a></code></i>
+  <i><code>&copy 2025-present <a href="https://github.com/ashish0kumar">Ashish Kumar</a></code></i>
 </p>
 
 <div align="center">
-<a href="https://github.com/ashish0kumar/stormy/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ashish0kumar/stormy?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE"></a>&nbsp;&nbsp;
+  <a href="https://github.com/ashish0kumar/stormy/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/ashish0kumar/stormy?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE">
+  </a>&nbsp;&nbsp;
 </div>
