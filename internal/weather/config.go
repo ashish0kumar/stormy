@@ -90,7 +90,7 @@ func GetConfigPath() string {
 // ValidateConfig checks if the config is valid
 func ValidateConfig(config *Config) {
 	// Validate provider
-	if slices.Contains(providers[:], config.Provider) {
+	if !slices.Contains(providers[:], config.Provider) {
 		_, _ = fmt.Fprintln(os.Stderr, "Warning: Invalid provider in config. Using 'OpenMeteo' as default.")
 		config.Provider = ProviderOpenMeteo
 	}
