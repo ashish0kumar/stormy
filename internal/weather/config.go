@@ -89,21 +89,26 @@ func GetConfigPath() string {
 
 // ValidateConfig checks if the config is valid
 func ValidateConfig(config *Config) {
+	const defaultProvider = ProviderOpenMeteo
+	const defaultUnit = UnitMetric
+
 	// Validate provider
 	if !slices.Contains(providers[:], config.Provider) {
-		_, _ = fmt.Fprintln(os.Stderr, "Warning: Invalid provider in config. Using 'OpenMeteo' as default.")
-		config.Provider = ProviderOpenMeteo
+		_, _ = fmt.Fprintf(
+			os.Stderr, "Warning: Invalid provider in config. Using '%s' as default.\n", defaultProvider,
+		)
+		config.Provider = defaultProvider
 	}
 
 	// Validate units
 	if !slices.Contains(validUnits[:], config.Units) {
-		_, _ = fmt.Fprintf(os.Stderr, "Warning: Invalid units in config. Using '%s' as default.\n", UnitMetric)
-		config.Units = UnitMetric
+		_, _ = fmt.Fprintf(os.Stderr, "Warning: Invalid units in config. Using '%s' as default.\n", defaultUnit)
+		config.Units = defaultUnit
 	}
 
 	// Validate API key requirement
 	if config.Provider == ProviderOpenWeatherMap && config.ApiKey == "" {
-		_, _ = fmt.Fprintln(os.Stderr, "Warning: 'api_key' is required for OpenWeatherMap provider.")
+		_, _ = fmt.Fprintf(os.Stderr, "Warning: 'api_key' is required for %s provider.\n", ProviderOpenWeatherMap)
 	}
 }
 

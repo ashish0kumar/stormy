@@ -111,7 +111,10 @@ func main() {
 
 	// Check if the API key and city are set
 	if config.Provider == weather.ProviderOpenWeatherMap && config.ApiKey == "" {
-		_, _ = fmt.Fprintln(os.Stderr, "Error: API key must be set in the config file when using OpenWeatherMap")
+		_, _ = fmt.Fprintf(
+			os.Stderr, "Error: API key must be set in the config file when using %s\n",
+			weather.ProviderOpenWeatherMap,
+		)
 		_, _ = fmt.Fprintln(os.Stderr, "Get your API key from https://openweathermap.org/api")
 		_, _ = fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
 		_, _ = fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
@@ -128,8 +131,9 @@ func fetchAndDisplay(config weather.Config, clearDisplay bool) {
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Failed to fetch weather data: %v\n", err)
 		if errors.Is(err, weather.ErrUnsupportedQuery) {
-			_, _ = fmt.Fprintln(
-				os.Stderr, "Detailed queries are not supported by OpenMeteo, try using other providers.",
+			_, _ = fmt.Fprintf(
+				os.Stderr, "Detailed queries are not supported by %s, try using other providers.\n",
+				weather.ProviderOpenMeteo,
 			)
 		} else {
 			_, _ = fmt.Fprintln(os.Stderr, "Please check your internet connection and API key.")
