@@ -168,7 +168,7 @@ func GetFirstGeoResult(encodedCity string) (*GeoResult, error) {
 	return &geo.Results[0], nil
 }
 
-func WeatherCodeToSentence(code int) string {
+func CodeToSentence(code int) string {
 	switch code {
 	case 0:
 		return "Clear"
@@ -210,8 +210,8 @@ func ConvertOpenMeteoToWeather(om OpenMeteoWeather, cityName string) Weather {
 		}{
 			{
 				ID:          om.Current.WeatherCode,
-				Main:        WeatherCodeToSentence(om.Current.WeatherCode),
-				Description: WeatherCodeToSentence(om.Current.WeatherCode),
+				Main:        CodeToSentence(om.Current.WeatherCode),
+				Description: CodeToSentence(om.Current.WeatherCode),
 			},
 		},
 		Main: struct {

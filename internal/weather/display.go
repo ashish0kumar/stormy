@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	MpsToMph  = 2.23694
-	KmphToMph = 0.621371
-	MpsToKmph = 3.6
+	MpsToMph = 2.23694
+	KphToMph = 0.621371
+	MpsToKph = 3.6
 )
 
 func celsiusToFahrenheit(c float64) float64 {
@@ -27,7 +27,7 @@ func getWindDirectionSymbol(degrees int) string {
 
 // DisplayWeather renders the weather data with ASCII art
 func DisplayWeather(weather *Weather, config Config) {
-	// Get main weather condition
+	// Get the main weather condition
 	var mainWeather, description string
 	var weatherID int
 	if len(weather.Weather) > 0 {
@@ -55,11 +55,11 @@ func DisplayWeather(weather *Weather, config Config) {
 		// Convert temperature for both providers
 		temperature = celsiusToFahrenheit(temperature)
 
-		// Convert wind speed based on provider
+		// Convert wind speed based on this provider
 		if config.Provider == ProviderOpenWeatherMap {
 			windSpeed *= MpsToMph // m/s to mph
 		} else {
-			windSpeed *= KmphToMph // km/h to mph
+			windSpeed *= KphToMph // km/h to mph
 		}
 
 	default:
@@ -68,14 +68,14 @@ func DisplayWeather(weather *Weather, config Config) {
 
 		// Convert wind speed for OpenWeatherMap provider
 		if config.Provider == ProviderOpenWeatherMap {
-			windSpeed *= MpsToKmph // m/s to km/h
+			windSpeed *= MpsToKph // m/s to km/h
 		}
 	}
 
 	// Format precipitation info
-	precipMM := 0.0
+	precipitationMM := 0.0
 	if weather.Rain.OneHour > 0 {
-		precipMM = weather.Rain.OneHour
+		precipitationMM = weather.Rain.OneHour
 	}
 
 	popPercent := 0
@@ -118,14 +118,14 @@ func DisplayWeather(weather *Weather, config Config) {
 		values = append(values, fmt.Sprintf("%d%%", weather.Main.Humidity))
 
 		labels = append(labels, "Precip ")
-		values = append(values, fmt.Sprintf("%.1f mm | %d%%", precipMM, popPercent))
+		values = append(values, fmt.Sprintf("%.1f mm | %d%%", precipitationMM, popPercent))
 	} else {
 		// Compact mode doesn't use labels in the same way
 		weatherDisplay := description
 		tempDisplay := fmt.Sprintf("%.1f%s", temperature, tempUnit)
 		windDisplay := fmt.Sprintf("%.1f%s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg))
 		humidityDisplay := fmt.Sprintf("%d%%", weather.Main.Humidity)
-		precipDisplay := fmt.Sprintf("%.1fmm | %d%%", precipMM, popPercent)
+		precipitationDisplay := fmt.Sprintf("%.1fmm | %d%%", precipitationMM, popPercent)
 
 		// For compact mode, we'll just pass these values directly to the display function
 		displayWeatherArtCompact(
@@ -136,7 +136,7 @@ func DisplayWeather(weather *Weather, config Config) {
 			tempDisplay,
 			windDisplay,
 			humidityDisplay,
-			precipDisplay,
+			precipitationDisplay,
 			config,
 		)
 		return
