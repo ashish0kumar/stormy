@@ -38,7 +38,7 @@ func init() {
 }
 
 func listenForQuit(stop chan struct{}) {
-	var didQuit, didCtrlC bool
+	var shouldExit, shouldInterrupt bool
 	// Switch stdin into 'raw' mode
 	oldState, errRaw := term.MakeRaw(int(os.Stdin.Fd()))
 	if errRaw != nil {
@@ -47,11 +47,17 @@ func listenForQuit(stop chan struct{}) {
 	}
 	defer func(fd int, state *term.State) {
 		_ = term.Restore(fd, state)
-		if didQuit {
-			_ = syscall.Kill(syscall.Getpid(), syscall.SIGQUIT)
+		if shouldExit {
+			_, _ = ansi.Print("\x1b[?25h") // restore cursor
+			fmt.Printf("\n\n[%s] Stopping now, bye!\n", color.New(color.FgGreen).SprintFunc()("✓"))
+			os.Exit(0)
 		}
-		if didCtrlC {
-			_ = syscall.Kill(syscall.Getpid(), syscall.SIGINT) // same as os.Interrupt
+		if shouldInterrupt {
+			_, _ = ansi.Print("\x1b[?25h") // restore cursor
+			_, _ = fmt.Fprintf(
+				os.Stderr, "\n\n[%s] Program interrupted. Bye!\n", color.New(color.FgRed).SprintFunc()("x"),
+			)
+			os.Exit(1)
 		}
 	}(int(os.Stdin.Fd()), oldState)
 
@@ -59,7 +65,6 @@ func listenForQuit(stop chan struct{}) {
 	for {
 		select {
 		case <-stop:
-			_, _ = fmt.Fprintln(os.Stderr, "QUITTING")
 			return
 		default:
 			n, err := os.Stdin.Read(buffer)
@@ -69,11 +74,11 @@ func listenForQuit(stop chan struct{}) {
 
 			char := buffer[0]
 			if char == 'q' || char == 'Q' {
-				didQuit = true
+				shouldExit = true
 				return
 			}
 			if char == 3 { // Ctrl+C
-				didCtrlC = true
+				shouldInterrupt = true
 				return
 			}
 		}
