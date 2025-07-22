@@ -1,10 +1,9 @@
 package weather
 
-// getIcon returns the ASCII art for a given weather condition with proper spacing
-func getIcon(name string, useColors bool) []string {
-	// Base monochrome icons with consistent 7-line height (top/bottom padding)
-	icon := map[string][]string{
-		"Unknown": {
+var (
+	// icon base monochrome icons with consistent 7-line height (top/bottom padding)
+	icon = map[string][]string{
+		ConditionUnknown: {
 			"             ",
 			"    .-.      ",
 			"     __)     ",
@@ -13,7 +12,7 @@ func getIcon(name string, useColors bool) []string {
 			"      •      ",
 			"             ",
 		},
-		"Sunny": {
+		ConditionSunny: {
 			"             ",
 			"    \\   /    ",
 			"     .-.     ",
@@ -22,7 +21,7 @@ func getIcon(name string, useColors bool) []string {
 			"    /   \\    ",
 			"             ",
 		},
-		"PartlyCloudy": {
+		ConditionPartlyCloudy: {
 			"             ",
 			"   \\  /      ",
 			" _ /\"\".-.    ",
@@ -31,7 +30,7 @@ func getIcon(name string, useColors bool) []string {
 			"             ",
 			"             ",
 		},
-		"Cloudy": {
+		ConditionCloudy: {
 			"             ",
 			"             ",
 			"     .--.    ",
@@ -40,7 +39,7 @@ func getIcon(name string, useColors bool) []string {
 			"             ",
 			"             ",
 		},
-		"VeryCloudy": {
+		ConditionVeryCloudy: {
 			"             ",
 			"             ",
 			"     .--.    ",
@@ -49,7 +48,7 @@ func getIcon(name string, useColors bool) []string {
 			"             ",
 			"             ",
 		},
-		"LightShowers": {
+		ConditionLightShowers: {
 			"             ",
 			" _`/\"\".-.    ",
 			"  ,\\_(   ).  ",
@@ -58,7 +57,7 @@ func getIcon(name string, useColors bool) []string {
 			"    ' ' ' '  ",
 			"             ",
 		},
-		"HeavyShowers": {
+		ConditionHeavyShowers: {
 			"             ",
 			" _`/\"\".-.    ",
 			"  ,\\_(   ).  ",
@@ -67,7 +66,7 @@ func getIcon(name string, useColors bool) []string {
 			"   ‚'‚'‚'‚'  ",
 			"             ",
 		},
-		"LightSnow": {
+		ConditionLightSnow: {
 			"             ",
 			"     .-.     ",
 			"    (   ).   ",
@@ -76,7 +75,7 @@ func getIcon(name string, useColors bool) []string {
 			"   *  *  *   ",
 			"             ",
 		},
-		"HeavySnow": {
+		ConditionHeavySnow: {
 			"             ",
 			"     .-.     ",
 			"    (   ).   ",
@@ -85,7 +84,7 @@ func getIcon(name string, useColors bool) []string {
 			"  * * * *    ",
 			"             ",
 		},
-		"Thunderstorm": {
+		ConditionThunderstorm: {
 			"             ",
 			"     .-.     ",
 			"    (   ).   ",
@@ -94,7 +93,7 @@ func getIcon(name string, useColors bool) []string {
 			"  ‚'‚'‚'‚'   ",
 			"             ",
 		},
-		"Fog": {
+		ConditionFog: {
 			"             ",
 			"             ",
 			" _ - _ - _ - ",
@@ -105,13 +104,9 @@ func getIcon(name string, useColors bool) []string {
 		},
 	}
 
-	if !useColors {
-		return icon[name]
-	}
-
-	// Colored versions with same spacing
-	coloredIcon := map[string][]string{
-		"Sunny": {
+	// coloredIcon colored icons with the same spacing
+	coloredIcon = map[string][]string{
+		ConditionSunny: {
 			"             ",
 			"\033[38;5;226m    \\   /    \033[0m",
 			"\033[38;5;226m     .-.     \033[0m",
@@ -120,7 +115,7 @@ func getIcon(name string, useColors bool) []string {
 			"\033[38;5;226m    /   \\    \033[0m",
 			"             ",
 		},
-		"PartlyCloudy": {
+		ConditionPartlyCloudy: {
 			"             ",
 			"\033[38;5;226m   \\  /\033[0m      ",
 			"\033[38;5;226m _ /\"\"\033[38;5;250m.-.    \033[0m",
@@ -129,7 +124,7 @@ func getIcon(name string, useColors bool) []string {
 			"             ",
 			"             ",
 		},
-		"Cloudy": {
+		ConditionCloudy: {
 			"             ",
 			"             ",
 			"\033[38;5;250m     .--.    \033[0m",
@@ -138,7 +133,7 @@ func getIcon(name string, useColors bool) []string {
 			"             ",
 			"             ",
 		},
-		"VeryCloudy": {
+		ConditionVeryCloudy: {
 			"             ",
 			"             ",
 			"\033[38;5;240;1m     .--.    \033[0m",
@@ -147,7 +142,7 @@ func getIcon(name string, useColors bool) []string {
 			"             ",
 			"             ",
 		},
-		"LightShowers": {
+		ConditionLightShowers: {
 			"             ",
 			"\033[38;5;226m _`/\"\"\033[38;5;250m.-.    \033[0m",
 			"\033[38;5;226m  ,\\_\033[38;5;250m(   ).  \033[0m",
@@ -156,7 +151,7 @@ func getIcon(name string, useColors bool) []string {
 			"\033[38;5;111m    ' ' ' '  \033[0m",
 			"             ",
 		},
-		"HeavyShowers": {
+		ConditionHeavyShowers: {
 			"             ",
 			"\033[38;5;226m _`/\"\"\033[38;5;240;1m.-.    \033[0m",
 			"\033[38;5;226m  ,\\_\033[38;5;240;1m(   ).  \033[0m",
@@ -165,7 +160,7 @@ func getIcon(name string, useColors bool) []string {
 			"\033[38;5;21;1m   ‚'‚'‚'‚'  \033[0m",
 			"             ",
 		},
-		"LightSnow": {
+		ConditionLightSnow: {
 			"             ",
 			"\033[38;5;250m     .-.     \033[0m",
 			"\033[38;5;250m    (   ).   \033[0m",
@@ -174,7 +169,7 @@ func getIcon(name string, useColors bool) []string {
 			"\033[38;5;255m   *  *  *   \033[0m",
 			"             ",
 		},
-		"HeavySnow": {
+		ConditionHeavySnow: {
 			"             ",
 			"\033[38;5;240;1m     .-.     \033[0m",
 			"\033[38;5;240;1m    (   ).   \033[0m",
@@ -183,7 +178,7 @@ func getIcon(name string, useColors bool) []string {
 			"\033[38;5;255;1m  * * * *    \033[0m",
 			"             ",
 		},
-		"Thunderstorm": {
+		ConditionThunderstorm: {
 			"             ",
 			"\033[38;5;240;1m     .-.     \033[0m",
 			"\033[38;5;240;1m    (   ).   \033[0m",
@@ -192,7 +187,7 @@ func getIcon(name string, useColors bool) []string {
 			"\033[38;5;21;1m  ‚'‚'‚'‚'   \033[0m",
 			"             ",
 		},
-		"Fog": {
+		ConditionFog: {
 			"             ",
 			"             ",
 			"\033[38;5;251m _ - _ - _ - \033[0m",
@@ -201,6 +196,13 @@ func getIcon(name string, useColors bool) []string {
 			"             ",
 			"             ",
 		},
+	}
+)
+
+// getIcon returns the ASCII art for a given weather condition with proper spacing
+func getIcon(name string, useColors bool) []string {
+	if !useColors {
+		return icon[name]
 	}
 
 	if ci, ok := coloredIcon[name]; ok {
@@ -213,94 +215,94 @@ func getIcon(name string, useColors bool) []string {
 func getWeatherIcon(weatherMain string, weatherID int, useColors bool) []string {
 	iconMap := map[int]string{
 		// Thunderstorm
-		200: "Thunderstorm",
-		201: "Thunderstorm",
-		202: "Thunderstorm",
-		210: "Thunderstorm",
-		211: "Thunderstorm",
-		212: "Thunderstorm",
-		221: "Thunderstorm",
-		230: "Thunderstorm",
-		231: "Thunderstorm",
-		232: "Thunderstorm",
+		200: ConditionThunderstorm,
+		201: ConditionThunderstorm,
+		202: ConditionThunderstorm,
+		210: ConditionThunderstorm,
+		211: ConditionThunderstorm,
+		212: ConditionThunderstorm,
+		221: ConditionThunderstorm,
+		230: ConditionThunderstorm,
+		231: ConditionThunderstorm,
+		232: ConditionThunderstorm,
 
 		// Drizzle
-		300: "LightShowers",
-		301: "LightShowers",
-		302: "LightShowers",
-		310: "LightShowers",
-		311: "LightShowers",
-		312: "LightShowers",
-		313: "LightShowers",
-		314: "LightShowers",
-		321: "LightShowers",
+		300: ConditionLightShowers,
+		301: ConditionLightShowers,
+		302: ConditionLightShowers,
+		310: ConditionLightShowers,
+		311: ConditionLightShowers,
+		312: ConditionLightShowers,
+		313: ConditionLightShowers,
+		314: ConditionLightShowers,
+		321: ConditionLightShowers,
 
 		// Rain
-		500: "LightShowers",
-		501: "LightShowers",
-		502: "HeavyShowers",
-		503: "HeavyShowers",
-		504: "HeavyShowers",
-		511: "LightSnow",
-		520: "LightShowers",
-		521: "LightShowers",
-		522: "HeavyShowers",
-		531: "HeavyShowers",
+		500: ConditionLightShowers,
+		501: ConditionLightShowers,
+		502: ConditionHeavyShowers,
+		503: ConditionHeavyShowers,
+		504: ConditionHeavyShowers,
+		511: ConditionLightSnow,
+		520: ConditionLightShowers,
+		521: ConditionLightShowers,
+		522: ConditionHeavyShowers,
+		531: ConditionHeavyShowers,
 
 		// Snow
-		600: "LightSnow",
-		601: "HeavySnow",
-		602: "HeavySnow",
-		611: "LightSnow",
-		612: "LightSnow",
-		613: "LightSnow",
-		615: "LightSnow",
-		616: "LightSnow",
-		620: "LightSnow",
-		621: "HeavySnow",
-		622: "HeavySnow",
+		600: ConditionLightSnow,
+		601: ConditionHeavySnow,
+		602: ConditionHeavySnow,
+		611: ConditionLightSnow,
+		612: ConditionLightSnow,
+		613: ConditionLightSnow,
+		615: ConditionLightSnow,
+		616: ConditionLightSnow,
+		620: ConditionLightSnow,
+		621: ConditionHeavySnow,
+		622: ConditionHeavySnow,
 
 		// Atmosphere
-		701: "Fog",
-		711: "Fog",
-		721: "Fog",
-		731: "Fog",
-		741: "Fog",
-		751: "Fog",
-		761: "Fog",
-		762: "Fog",
-		771: "Fog",
-		781: "Fog",
+		701: ConditionFog,
+		711: ConditionFog,
+		721: ConditionFog,
+		731: ConditionFog,
+		741: ConditionFog,
+		751: ConditionFog,
+		761: ConditionFog,
+		762: ConditionFog,
+		771: ConditionFog,
+		781: ConditionFog,
 
 		// Clear
-		800: "Sunny",
+		800: ConditionSunny,
 
 		// Clouds
-		801: "PartlyCloudy",
-		802: "Cloudy",
-		803: "VeryCloudy",
-		804: "VeryCloudy",
+		801: ConditionPartlyCloudy,
+		802: ConditionCloudy,
+		803: ConditionVeryCloudy,
+		804: ConditionVeryCloudy,
 	}
 
-	iconName := "Unknown"
+	iconName := ConditionUnknown
 	if name, ok := iconMap[weatherID]; ok {
 		iconName = name
 	} else {
 		switch weatherMain {
-		case "Clear":
-			iconName = "Sunny"
-		case "Clouds":
-			iconName = "Cloudy"
-		case "Rain":
-			iconName = "LightShowers"
-		case "Drizzle":
-			iconName = "LightShowers"
-		case "Thunderstorm":
-			iconName = "Thunderstorm"
-		case "Snow":
-			iconName = "LightSnow"
-		case "Mist", "Smoke", "Haze", "Dust", "Fog", "Sand", "Ash", "Squall", "Tornado":
-			iconName = "Fog"
+		case ConditionClear:
+			iconName = ConditionSunny
+		case ConditionClouds:
+			iconName = ConditionCloudy
+		case ConditionRain:
+			iconName = ConditionLightShowers
+		case ConditionDrizzle:
+			iconName = ConditionLightShowers
+		case ConditionThunderstorm:
+			iconName = ConditionThunderstorm
+		case ConditionSnow:
+			iconName = ConditionLightSnow
+		case ConditionMist, ConditionSmoke, ConditionHaze, ConditionDust, ConditionFog, ConditionSand, ConditionAsh, ConditionSquall, ConditionTornado:
+			iconName = ConditionFog
 		}
 	}
 

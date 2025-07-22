@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"slices"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -25,12 +26,16 @@ type Config struct {
 
 // Flags holds command line flags
 type Flags struct {
-	City    string
-	Units   string
-	Compact bool
-	Help    bool
-	Version bool
+	City, Units            string
+	Compact, Help, Version bool
 }
+
+const (
+	UnitMetric   = "metric"
+	UnitImperial = "imperial"
+)
+
+var validUnits = [...]string{UnitMetric, UnitImperial}
 
 // DefaultConfig returns a new Config with default values
 func DefaultConfig() Config {
@@ -38,7 +43,7 @@ func DefaultConfig() Config {
 		Provider:     ProviderOpenMeteo,
 		ApiKey:       "",
 		City:         "",
-		Units:        "metric",
+		Units:        UnitMetric,
 		ShowCityName: false,
 		UseColors:    true,
 		LiveMode:     false,
@@ -60,10 +65,8 @@ func GetConfigPath() string {
 				_, _ = fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
 				return ""
 			}
-			configDir = filepath.Join(dir, "stormy")
-		} else {
-			configDir = filepath.Join(dir, "stormy")
 		}
+		configDir = filepath.Join(dir, "stormy")
 	} else {
 		// Linux/macOS: Follow XDG Base Directory Specification
 		xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
@@ -87,17 +90,15 @@ func GetConfigPath() string {
 // ValidateConfig checks if the config is valid
 func ValidateConfig(config *Config) {
 	// Validate provider
-	if config.Provider != ProviderOpenWeatherMap && config.Provider != ProviderOpenMeteo {
+	if slices.Contains(providers[:], config.Provider) {
 		_, _ = fmt.Fprintln(os.Stderr, "Warning: Invalid provider in config. Using 'OpenMeteo' as default.")
 		config.Provider = ProviderOpenMeteo
 	}
 
 	// Validate units
-	validUnits := []string{"metric", "imperial"}
-
-	if !slices.Contains(validUnits, config.Units) {
-		_, _ = fmt.Fprintln(os.Stderr, "Warning: Invalid units in config. Using 'metric' as default.")
-		config.Units = "metric"
+	if !slices.Contains(validUnits[:], config.Units) {
+		_, _ = fmt.Fprintf(os.Stderr, "Warning: Invalid units in config. Using '%s' as default.\n", UnitMetric)
+		config.Units = UnitMetric
 	}
 
 	// Validate API key requirement
@@ -109,8 +110,9 @@ func ValidateConfig(config *Config) {
 // ReadConfig reads/creates the config file and returns the configuration
 func ReadConfig() Config {
 	configPath := GetConfigPath()
+	defaultConfig := DefaultConfig()
 	if configPath == "" {
-		return DefaultConfig()
+		return defaultConfig
 	}
 
 	// Create the directory if it doesn't exist
@@ -118,14 +120,13 @@ func ReadConfig() Config {
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
 		if err = os.MkdirAll(configDir, 0755); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, "Failed to create config directory:", err)
-			return DefaultConfig()
+			return defaultConfig
 		}
 	}
 
 	// Check if the config file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		// Create default config
-		defaultConfig := DefaultConfig()
 		var file *os.File
 		file, err = os.Create(configPath)
 		if err != nil {
@@ -151,14 +152,13 @@ func ReadConfig() Config {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Failed to read config file:", err)
-		return DefaultConfig()
+		return defaultConfig
 	}
 
 	if err = toml.Unmarshal(data, &config); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Failed to parse config file, using defaults with available values:", err)
 
 		// Try to load partial config
-		defaultConfig := DefaultConfig()
 		var partialConfig map[string]any
 
 		if err = toml.Unmarshal(data, &partialConfig); err == nil {
@@ -214,11 +214,9 @@ func ReadConfig() Config {
 }
 
 // ParseFlags parses command line flags
-func ParseFlags() Flags {
-	flags := Flags{}
-
+func ParseFlags() (flags Flags) {
 	flag.StringVar(&flags.City, "city", "", "City to get weather for")
-	flag.StringVar(&flags.Units, "units", "", "Units (metric, imperial)")
+	flag.StringVar(&flags.Units, "units", "", fmt.Sprintf("Units (%s)", strings.Join(validUnits[:], ", ")))
 	flag.BoolVar(&flags.Compact, "compact", false, "Compact display mode")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
 	flag.BoolVar(&flags.Version, "version", false, "Show version information")
@@ -238,7 +236,7 @@ func ParseFlags() Flags {
 		os.Exit(0)
 	}
 
-	return flags
+	return
 }
 
 // ApplyFlags applies command line flags to the config

@@ -14,30 +14,57 @@ const (
 	MpsToKph = 3.6
 )
 
+type Condition = string
+
+const (
+	ConditionUnknown      Condition = "Unknown"
+	ConditionClear        Condition = "Clear"
+	ConditionClouds       Condition = "Clouds"
+	ConditionRain         Condition = "Rain"
+	ConditionSnow         Condition = "Snow"
+	ConditionThunderstorm Condition = "Thunderstorm"
+	ConditionSunny        Condition = "Sunny"
+	ConditionPartlyCloudy Condition = "PartlyCloudy"
+	ConditionCloudy       Condition = "Cloudy"
+	ConditionVeryCloudy   Condition = "VeryCloudy"
+	ConditionDrizzle      Condition = "Drizzle"
+	ConditionLightShowers Condition = "LightShowers"
+	ConditionHeavyShowers Condition = "HeavyShowers"
+	ConditionLightSnow    Condition = "LightSnow"
+	ConditionHeavySnow    Condition = "HeavySnow"
+	ConditionMist         Condition = "Mist"
+	ConditionSmoke        Condition = "Smoke"
+	ConditionHaze         Condition = "Haze"
+	ConditionDust         Condition = "Dust"
+	ConditionFog          Condition = "Fog"
+	ConditionSand         Condition = "Sand"
+	ConditionAsh          Condition = "Ash"
+	ConditionSquall       Condition = "Squall"
+	ConditionTornado      Condition = "Tornado"
+)
+
+var directionSymbols = [...]string{"↑", "↗", "→", "↘", "↓", "↙", "←", "↖"}
+
 func celsiusToFahrenheit(c float64) float64 {
 	return c*9/5 + 32
 }
 
 // getWindDirectionSymbol converts wind degrees to a direction symbol
 func getWindDirectionSymbol(degrees int) string {
-	directions := []string{"↑", "↗", "→", "↘", "↓", "↙", "←", "↖"}
 	index := int((float64(degrees)+22.5)/45.0) % 8
-	return directions[index]
+	return directionSymbols[index]
 }
 
 // DisplayWeather renders the weather data with ASCII art
 func DisplayWeather(weather *Weather, config Config) {
 	// Get the main weather condition
-	var mainWeather, description string
-	var weatherID int
+	mainWeather := ConditionUnknown
+	description := "unknown conditions"
+	weatherID := 0
 	if len(weather.Weather) > 0 {
 		mainWeather = weather.Weather[0].Main
 		description = weather.Weather[0].Description
 		weatherID = weather.Weather[0].ID
-	} else {
-		mainWeather = "Unknown"
-		description = "unknown conditions"
-		weatherID = 0
 	}
 
 	// Determine units based on config
@@ -48,7 +75,7 @@ func DisplayWeather(weather *Weather, config Config) {
 	temperature := weather.Main.Temp
 
 	switch config.Units {
-	case "imperial":
+	case UnitImperial:
 		windSpeedUnits = "mph"
 		tempUnit = "°F"
 
@@ -151,15 +178,15 @@ func getColoredWeatherText(mainWeather, description string) string {
 	text := description
 
 	switch mainWeather {
-	case "Clear":
+	case ConditionClear:
 		return color.YellowString(color.New(color.Bold).Sprintf(text))
-	case "Clouds":
+	case ConditionClouds:
 		return color.MagentaString(color.New(color.Bold).Sprintf(text))
-	case "Rain":
+	case ConditionRain:
 		return color.BlueString(color.New(color.Bold).Sprintf(text))
-	case "Snow":
+	case ConditionSnow:
 		return color.CyanString(color.New(color.Bold).Sprintf(text))
-	case "Thunderstorm":
+	case ConditionThunderstorm:
 		return color.New(color.Bold, color.BgRed).Sprintf(text)
 	default:
 		return color.RedString(color.New(color.Bold).Sprintf(text))
