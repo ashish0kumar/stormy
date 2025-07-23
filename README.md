@@ -166,7 +166,5 @@ stormy --help
 </p>
 
 <div align="center">
-  <a href="https://github.com/ashish0kumar/stormy/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/ashish0kumar/stormy?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE">
-  </a>&nbsp;&nbsp;
+  <a href="https://github.com/ashish0kumar/stormy/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ashish0kumar/stormy?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE"></a>&nbsp;&nbsp;
 </div>
