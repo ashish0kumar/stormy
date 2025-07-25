@@ -9,6 +9,14 @@ Minimal, customizable, and neofetch-like weather CLI inspired by
   <img src="./assets/ss.png" alt="screenshot" width="70%">
 </div>
 
+<br>
+
+<p align="center">
+<a href="https://terminaltrove.com/stormy/">
+<img width="25%" alt="terminal_trove_normal" src="https://github.com/user-attachments/assets/f85b1470-a574-4bc2-b002-4e6dddb9e277" />
+</a>
+</p>
+
 ---
 
 ## Motivation
@@ -158,7 +166,5 @@ stormy --help
 </p>
 
 <div align="center">
-  <a href="https://github.com/ashish0kumar/stormy/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/ashish0kumar/stormy?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE">
-  </a>&nbsp;&nbsp;
+  <a href="https://github.com/ashish0kumar/stormy/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ashish0kumar/stormy?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE"></a>&nbsp;&nbsp;
 </div>
