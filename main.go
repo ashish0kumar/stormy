@@ -101,20 +101,23 @@ func main() {
 	// Override config with command line flags if provided
 	weather.ApplyFlags(&config, flags)
 
-	// Check if city is set
+	// Check if the city is set
 	if config.City == "" {
-		fmt.Fprintln(os.Stderr, "Error: City must be set in the config file or via command line flags")
-		fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
-		fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
+		_, _ = fmt.Fprintln(os.Stderr, "Error: City must be set in the config file or via command line flags")
+		_, _ = fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
+		_, _ = fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
 		os.Exit(1)
 	}
 
-	// Check if API key and city are set
+	// Check if the API key and city are set
 	if config.Provider == weather.ProviderOpenWeatherMap && config.ApiKey == "" {
-		fmt.Fprintln(os.Stderr, "Error: API key must be set in the config file when using OpenWeatherMap")
-		fmt.Fprintln(os.Stderr, "Get your API key from https://openweathermap.org/api")
-		fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
-		fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
+		_, _ = fmt.Fprintf(
+			os.Stderr, "Error: API key must be set in the config file when using %s\n",
+			weather.ProviderOpenWeatherMap,
+		)
+		_, _ = fmt.Fprintln(os.Stderr, "Get your API key from https://openweathermap.org/api")
+		_, _ = fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
+		_, _ = fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
 	}
 
 	fetchAndDisplay(config, false)
@@ -126,11 +129,14 @@ func fetchAndDisplay(config weather.Config, clearDisplay bool) {
 	// Fetch weather data
 	weatherData, err := weather.FetchWeather(config)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to fetch weather data: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Failed to fetch weather data: %v\n", err)
 		if errors.Is(err, weather.ErrUnsupportedQuery) {
-			fmt.Fprintln(os.Stderr, "Detailed queries are not supported by OpenMeteo, try using other providers.")
+			_, _ = fmt.Fprintf(
+				os.Stderr, "Detailed queries are not supported by %s, try using other providers.\n",
+				weather.ProviderOpenMeteo,
+			)
 		} else {
-			fmt.Fprintln(os.Stderr, "Please check your internet connection and API key.")
+			_, _ = fmt.Fprintln(os.Stderr, "Please check your internet connection and API key.")
 		}
 		os.Exit(1)
 	}

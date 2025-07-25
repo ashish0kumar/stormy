@@ -15,6 +15,8 @@ const (
 	ProviderOpenMeteo      = "OpenMeteo"
 )
 
+var providers = [...]string{ProviderOpenWeatherMap, ProviderOpenMeteo}
+
 var ErrUnsupportedQuery = errors.New("unsupported query")
 
 type GeoResult struct {
@@ -105,9 +107,8 @@ type OpenWeatherMapWeather struct {
 // Weather holds the weather data returned by the API
 type Weather struct {
 	Weather []struct {
-		ID          int
-		Main        string
-		Description string
+		ID                int
+		Main, Description string
 	}
 	Main struct {
 		Temp     float64
@@ -168,34 +169,22 @@ func GetFirstGeoResult(encodedCity string) (*GeoResult, error) {
 	return &geo.Results[0], nil
 }
 
-func WeatherCodeToSentence(code int) string {
+func CodeToSentence(code int) string {
 	switch code {
-	case 0:
-		return "Clear"
-	case 1, 2, 3:
-		return "Clear"
-	case 45, 48:
-		return "Clouds"
-	case 51, 53, 55:
-		return "Clouds"
-	case 56, 57:
-		return "Clouds"
-	case 61, 63, 65:
-		return "Rain"
-	case 66, 67:
-		return "Rain"
-	case 71, 73, 75:
-		return "Snow"
-	case 77:
-		return "Snow"
+	case 0, 1, 2, 3:
+		return ConditionClear
+	case 45, 48, 51, 53, 55, 56, 57:
+		return ConditionClouds
+	case 61, 63, 65, 66, 67:
+		return ConditionRain
+	case 71, 73, 75, 77:
+		return ConditionSnow
 	case 80, 81, 82:
-		return "Rain"
+		return ConditionRain
 	case 85, 86:
-		return "Snow"
-	case 95:
-		return "Thunderstorm"
-	case 96, 99:
-		return "Thunderstorm"
+		return ConditionSnow
+	case 95, 96, 99:
+		return ConditionThunderstorm
 	default:
 		return "Unknown weather code"
 	}
@@ -210,8 +199,8 @@ func ConvertOpenMeteoToWeather(om OpenMeteoWeather, cityName string) Weather {
 		}{
 			{
 				ID:          om.Current.WeatherCode,
-				Main:        WeatherCodeToSentence(om.Current.WeatherCode),
-				Description: WeatherCodeToSentence(om.Current.WeatherCode),
+				Main:        CodeToSentence(om.Current.WeatherCode),
+				Description: CodeToSentence(om.Current.WeatherCode),
 			},
 		},
 		Main: struct {

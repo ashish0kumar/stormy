@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"slices"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -25,12 +26,16 @@ type Config struct {
 
 // Flags holds command line flags
 type Flags struct {
-	City    string
-	Units   string
-	Compact bool
-	Help    bool
-	Version bool
+	City, Units            string
+	Compact, Help, Version bool
 }
+
+const (
+	UnitMetric   = "metric"
+	UnitImperial = "imperial"
+)
+
+var validUnits = [...]string{UnitMetric, UnitImperial}
 
 // DefaultConfig returns a new Config with default values
 func DefaultConfig() Config {
@@ -38,7 +43,7 @@ func DefaultConfig() Config {
 		Provider:     ProviderOpenMeteo,
 		ApiKey:       "",
 		City:         "",
-		Units:        "metric",
+		Units:        UnitMetric,
 		ShowCityName: false,
 		UseColors:    true,
 		LiveMode:     false,
@@ -54,16 +59,14 @@ func GetConfigPath() string {
 		// Windows: Use AppData directory
 		dir, err := os.UserConfigDir()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to get config directory:", err)
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to get config directory:", err)
 			dir, err = os.UserHomeDir()
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
+				_, _ = fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
 				return ""
 			}
-			configDir = filepath.Join(dir, "stormy")
-		} else {
-			configDir = filepath.Join(dir, "stormy")
 		}
+		configDir = filepath.Join(dir, "stormy")
 	} else {
 		// Linux/macOS: Follow XDG Base Directory Specification
 		xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
@@ -74,7 +77,7 @@ func GetConfigPath() string {
 			// Fall back to ~/.config/stormy
 			homeDir, err := os.UserHomeDir()
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
+				_, _ = fmt.Fprintln(os.Stderr, "Failed to get home directory:", err)
 				return ""
 			}
 			configDir = filepath.Join(homeDir, ".config", "stormy")
@@ -86,55 +89,61 @@ func GetConfigPath() string {
 
 // ValidateConfig checks if the config is valid
 func ValidateConfig(config *Config) {
+	const defaultProvider = ProviderOpenMeteo
+	const defaultUnit = UnitMetric
+
 	// Validate provider
-	if config.Provider != ProviderOpenWeatherMap && config.Provider != ProviderOpenMeteo {
-		fmt.Fprintln(os.Stderr, "Warning: Invalid provider in config. Using 'OpenMeteo' as default.")
-		config.Provider = ProviderOpenMeteo
+	if !slices.Contains(providers[:], config.Provider) {
+		_, _ = fmt.Fprintf(
+			os.Stderr, "Warning: Invalid provider in config. Using '%s' as default.\n", defaultProvider,
+		)
+		config.Provider = defaultProvider
 	}
 
 	// Validate units
-	validUnits := []string{"metric", "imperial"}
-
-	if !slices.Contains(validUnits, config.Units) {
-		fmt.Fprintln(os.Stderr, "Warning: Invalid units in config. Using 'metric' as default.")
-		config.Units = "metric"
+	if !slices.Contains(validUnits[:], config.Units) {
+		_, _ = fmt.Fprintf(os.Stderr, "Warning: Invalid units in config. Using '%s' as default.\n", defaultUnit)
+		config.Units = defaultUnit
 	}
 
 	// Validate API key requirement
 	if config.Provider == ProviderOpenWeatherMap && config.ApiKey == "" {
-		fmt.Fprintln(os.Stderr, "Warning: 'api_key' is required for OpenWeatherMap provider.")
+		_, _ = fmt.Fprintf(os.Stderr, "Warning: 'api_key' is required for %s provider.\n", ProviderOpenWeatherMap)
 	}
 }
 
 // ReadConfig reads/creates the config file and returns the configuration
 func ReadConfig() Config {
 	configPath := GetConfigPath()
+	defaultConfig := DefaultConfig()
 	if configPath == "" {
-		return DefaultConfig()
+		return defaultConfig
 	}
 
-	// Create directory if it doesn't exist
+	// Create the directory if it doesn't exist
 	configDir := filepath.Dir(configPath)
 	if _, err := os.Stat(configDir); os.IsNotExist(err) {
-		if err := os.MkdirAll(configDir, 0755); err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to create config directory:", err)
-			return DefaultConfig()
+		if err = os.MkdirAll(configDir, 0755); err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to create config directory:", err)
+			return defaultConfig
 		}
 	}
 
-	// Check if config file exists
+	// Check if the config file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		// Create default config
-		defaultConfig := DefaultConfig()
-		file, err := os.Create(configPath)
+		var file *os.File
+		file, err = os.Create(configPath)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to create config file:", err)
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to create config file:", err)
 			return defaultConfig
 		}
-		defer file.Close()
+		defer func(f *os.File) {
+			_ = f.Close()
+		}(file)
 
-		if err := toml.NewEncoder(file).Encode(defaultConfig); err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to write default config:", err)
+		if err = toml.NewEncoder(file).Encode(defaultConfig); err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to write default config:", err)
 			return defaultConfig
 		}
 
@@ -147,18 +156,17 @@ func ReadConfig() Config {
 	var config Config
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to read config file:", err)
-		return DefaultConfig()
+		_, _ = fmt.Fprintln(os.Stderr, "Failed to read config file:", err)
+		return defaultConfig
 	}
 
-	if err := toml.Unmarshal(data, &config); err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to parse config file, using defaults with available values:", err)
+	if err = toml.Unmarshal(data, &config); err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, "Failed to parse config file, using defaults with available values:", err)
 
 		// Try to load partial config
-		defaultConfig := DefaultConfig()
 		var partialConfig map[string]any
 
-		if err := toml.Unmarshal(data, &partialConfig); err == nil {
+		if err = toml.Unmarshal(data, &partialConfig); err == nil {
 			// Apply any valid values from partial config
 			if provider, ok := partialConfig["provider"].(string); ok {
 				defaultConfig.Provider = provider
@@ -172,8 +180,8 @@ func ReadConfig() Config {
 			if units, ok := partialConfig["units"].(string); ok {
 				defaultConfig.Units = units
 			}
-			if showcityname, ok := partialConfig["showcityname"].(bool); ok {
-				defaultConfig.ShowCityName = showcityname
+			if showCityName, ok := partialConfig["showcityname"].(bool); ok {
+				defaultConfig.ShowCityName = showCityName
 			}
 			if useColors, ok := partialConfig["use_colors"].(bool); ok {
 				defaultConfig.UseColors = useColors
@@ -187,15 +195,18 @@ func ReadConfig() Config {
 		}
 
 		// Write corrected config back
-		file, err := os.Create(configPath)
+		var file *os.File
+		file, err = os.Create(configPath)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to update config file:", err)
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to update config file:", err)
 			return defaultConfig
 		}
-		defer file.Close()
+		defer func(f *os.File) {
+			_ = f.Close()
+		}(file)
 
-		if err := toml.NewEncoder(file).Encode(defaultConfig); err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to write merged config:", err)
+		if err = toml.NewEncoder(file).Encode(defaultConfig); err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to write merged config:", err)
 		}
 
 		config = defaultConfig
@@ -208,21 +219,19 @@ func ReadConfig() Config {
 }
 
 // ParseFlags parses command line flags
-func ParseFlags() Flags {
-	flags := Flags{}
-
+func ParseFlags() (flags Flags) {
 	flag.StringVar(&flags.City, "city", "", "City to get weather for")
-	flag.StringVar(&flags.Units, "units", "", "Units (metric, imperial)")
+	flag.StringVar(&flags.Units, "units", "", fmt.Sprintf("Units (%s)", strings.Join(validUnits[:], ", ")))
 	flag.BoolVar(&flags.Compact, "compact", false, "Compact display mode")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
 	flag.BoolVar(&flags.Version, "version", false, "Show version information")
 
 	// Add usage information
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\n", os.Args[0])
-		fmt.Fprintln(os.Stderr, "Options:")
+		_, _ = fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\n", os.Args[0])
+		_, _ = fmt.Fprintln(os.Stderr, "Options:")
 		flag.PrintDefaults()
-		fmt.Fprintln(os.Stderr, "\nConfig file is located at:", GetConfigPath())
+		_, _ = fmt.Fprintln(os.Stderr, "\nConfig file is located at:", GetConfigPath())
 	}
 
 	flag.Parse()
@@ -232,7 +241,7 @@ func ParseFlags() Flags {
 		os.Exit(0)
 	}
 
-	return flags
+	return
 }
 
 // ApplyFlags applies command line flags to the config
