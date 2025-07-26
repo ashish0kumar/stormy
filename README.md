@@ -155,7 +155,17 @@ stormy --help
 - [wttr.in](https://github.com/chubin/wttr.in?tab=readme-ov-file) for the ASCII
   weather icons
 
-<br>
+## Contributing
+
+Contributions are always welcome! If you have ideas, bug reports, or want to submit code, please feel free to open an issue or a pull request.
+
+## Contributors
+
+<a href="https://github.com/ashish0kumar/stormy/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ashish0kumar/stormy" />
+</a>
+
+<br><br>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" alt="catppuccin" />
