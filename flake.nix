@@ -1,5 +1,5 @@
 {
-  description = "🌦️ Minimal, customizable, and neofetch-like weather CLI";
+  description = "Minimal, customizable, and neofetch-like weather CLI";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -15,7 +15,7 @@
       system: let
         pkgs = import nixpkgs {inherit system;};
 
-        pname = "storymy";
+        pname = "stormy";
         version = "0.3.2";
       in {
         packages.default = pkgs.buildGoModule {
@@ -26,7 +26,7 @@
           vendorHash = "sha256-iwgGAJRygi+xS5eorZ8wyR6pMDZvmGFXBbCiFazyaHw=";
 
           meta = with pkgs.lib; {
-            description = "🌦️ Minimal, customizable, and neofetch-like weather CLI";
+            description = "Minimal, customizable, and neofetch-like weather CLI";
             license = licenses.mit;
             mainProgram = pname;
           };
