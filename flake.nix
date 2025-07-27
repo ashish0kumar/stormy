@@ -19,7 +19,7 @@
         version = "0.3.2";
       in {
         packages = {
-          cli = pkgs.buildGoModule {
+          stormy = pkgs.buildGoModule {
             inherit pname version;
 
             src = self;
@@ -32,7 +32,7 @@
               mainProgram = pname;
             };
           };
-          default = self.packages.${system}.cli;
+          default = self.packages.${system}.stormy;
         };
 
         apps.default = {
