@@ -43,10 +43,11 @@ partly because I enjoy building clean CLI tools.
 
 ## Installation
 
-### Prerequisites
+### Nix
 
-- Go 1.19 or higher
-- **Optional:** An API key from [OpenWeatherMap](https://openweathermap.org/api)
+```bash
+nix run github:ashish0kumar/stormy -- --city "London"
+```
 
 ### Via `go install`
 
@@ -104,7 +105,7 @@ live_mode = false
 compact = false
 ```
 
-#### OpenWeatherMap Configuration
+#### OpenWeatherMap Configuration (Requires an API key from [OpenWeatherMap](https://openweathermap.org/api))
 
 ```toml
 provider = "OpenWeatherMap"
