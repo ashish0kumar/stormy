@@ -48,8 +48,26 @@ partly because I enjoy building clean CLI tools.
 
 ### Nix
 
+#### One-time run
+
 ```bash
 nix run github:ashish0kumar/stormy -- --city "London"
+```
+
+#### Permanent installation
+
+```bash
+nix profile install github:ashish0kumar/stormy#stormy
+```
+
+#### Add to your system configuration (using flakes)
+
+```bash
+# In your flake.nix
+inputs.stormy.url = "github:ashish0kumar/stormy";
+
+# In your system or home-manager configuration
+environment.systemPackages = [ inputs.stormy.packages.x86_64-linux.stormy ];
 ```
 
 ### Via `go install`

@@ -18,18 +18,21 @@
         pname = "stormy";
         version = "0.3.2";
       in {
-        packages.default = pkgs.buildGoModule {
-          inherit pname version;
+        packages = {
+          stormy = pkgs.buildGoModule {
+            inherit pname version;
 
-          src = self;
+            src = self;
 
-          vendorHash = "sha256-iwgGAJRygi+xS5eorZ8wyR6pMDZvmGFXBbCiFazyaHw=";
+            vendorHash = "sha256-iwgGAJRygi+xS5eorZ8wyR6pMDZvmGFXBbCiFazyaHw=";
 
-          meta = with pkgs.lib; {
-            description = "Minimal, customizable, and neofetch-like weather CLI";
-            license = licenses.mit;
-            mainProgram = pname;
+            meta = with pkgs.lib; {
+              description = "Minimal, customizable, and neofetch-like weather CLI";
+              license = licenses.mit;
+              mainProgram = pname;
+            };
           };
+          default = self.packages.${system}.stormy;
         };
 
         apps.default = {
