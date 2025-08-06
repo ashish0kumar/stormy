@@ -102,8 +102,8 @@ func main() {
 	weather.ApplyFlags(&config, flags)
 
 	// Check if the city is set
-	if config.City == "" {
-		_, _ = fmt.Fprintln(os.Stderr, "Error: City must be set in the config file or via command line flags")
+	if config.City == "" && (config.Latitude == "" || config.Longitude == "") {
+		_, _ = fmt.Fprintln(os.Stderr, "Error: City or Longitude and Latitude must be set in the config file or via command line flags")
 		_, _ = fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
 		_, _ = fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
 		os.Exit(1)

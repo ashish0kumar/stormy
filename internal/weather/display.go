@@ -119,7 +119,7 @@ func DisplayWeather(weather *Weather, config Config) {
 		cityName = config.City
 	}
 
-	if config.ShowCityName {
+	if config.ShowCityName && cityName != "" {
 		if !config.Compact {
 			labels = append(labels, "City")
 			values = append(values, cityName)

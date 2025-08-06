@@ -17,6 +17,8 @@ type Config struct {
 	Provider     string `toml:"provider"`
 	ApiKey       string `toml:"api_key"`
 	City         string `toml:"city"`
+	Longitude    string `toml:"longitude"`
+	Latitude     string `toml:"latitude"`
 	Units        string `toml:"units"`
 	ShowCityName bool   `toml:"showcityname"`
 	UseColors    bool   `toml:"use_colors"`
@@ -26,8 +28,8 @@ type Config struct {
 
 // Flags holds command line flags
 type Flags struct {
-	City, Units            string
-	Compact, Help, Version bool
+	City, Units, Longitude, Latitude string
+	Compact, Help, Version           bool
 }
 
 const (
@@ -43,6 +45,8 @@ func DefaultConfig() Config {
 		Provider:     ProviderOpenMeteo,
 		ApiKey:       "",
 		City:         "",
+		Longitude:    "",
+		Latitude:     "",
 		Units:        UnitMetric,
 		ShowCityName: false,
 		UseColors:    true,
@@ -177,6 +181,12 @@ func ReadConfig() Config {
 			if city, ok := partialConfig["city"].(string); ok {
 				defaultConfig.City = city
 			}
+			if longitude, ok := partialConfig["longitude"].(string); ok {
+				defaultConfig.Longitude = longitude
+			}
+			if latitude, ok := partialConfig["latitude"].(string); ok {
+				defaultConfig.Latitude = latitude
+			}
 			if units, ok := partialConfig["units"].(string); ok {
 				defaultConfig.Units = units
 			}
@@ -221,6 +231,8 @@ func ReadConfig() Config {
 // ParseFlags parses command line flags
 func ParseFlags() (flags Flags) {
 	flag.StringVar(&flags.City, "city", "", "City to get weather for")
+	flag.StringVar(&flags.Longitude, "longitude", "", "Longitude coordinate to get weather for")
+	flag.StringVar(&flags.Latitude, "latitude", "", "Latitude coordinate to get weather for")
 	flag.StringVar(&flags.Units, "units", "", fmt.Sprintf("Units (%s)", strings.Join(validUnits[:], ", ")))
 	flag.BoolVar(&flags.Compact, "compact", false, "Compact display mode")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
@@ -248,6 +260,12 @@ func ParseFlags() (flags Flags) {
 func ApplyFlags(config *Config, flags Flags) {
 	if flags.City != "" {
 		config.City = flags.City
+	}
+	if flags.Longitude != "" {
+		config.Longitude = flags.Longitude
+	}
+	if flags.Latitude != "" {
+		config.Latitude = flags.Latitude
 	}
 	if flags.Units != "" {
 		config.Units = flags.Units
