@@ -271,10 +271,10 @@ func ConvertOpenWeatherMapToWeather(om OpenWeatherMapWeather, cityName string) W
 }
 
 func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
-	var latitude, longitude any;
-	var city string;
+	var latitude, longitude any
+	var city string
 
-	if (config.City != "") {
+	if config.City != "" {
 		// URL-encode the city name before passing to geocoding
 		encodedCity := url.QueryEscape(config.City)
 
@@ -286,10 +286,10 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 			return nil, fmt.Errorf("geocoding failed: %w", err)
 		}
 
-		latitude, longitude, city  = cityGeo.Latitude, cityGeo.Longitude, cityGeo.Name
+		latitude, longitude, city = cityGeo.Latitude, cityGeo.Longitude, cityGeo.Name
 	} else {
-		latitude, longitude  = config.Latitude, config.Longitude
-	} 
+		latitude, longitude = config.Latitude, config.Longitude
+	}
 
 	openMeteoWeather, err := fetchAndUnmarshal[OpenMeteoWeather](
 		"https://api.open-meteo.com/v1/forecast?latitude=%v&longitude=%v&current=temperature_2m,weather_code,precipitation,relative_humidity_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=kmh&temperature_unit=celsius",
@@ -306,10 +306,10 @@ func FetchWeatherOpenMeteo(config Config) (*Weather, error) {
 }
 
 func FetchWeatherOpenWeatherMap(config Config) (*Weather, error) {
-	var longitude, latitude any;
-	var city string;
+	var longitude, latitude any
+	var city string
 
-	if (config.City != "") {
+	if config.City != "" {
 		// URL encode the city parameter
 		encodedCity := url.QueryEscape(config.City)
 
