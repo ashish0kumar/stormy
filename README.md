@@ -12,7 +12,7 @@ Minimal, customizable, and neofetch-like weather CLI inspired by
 <br>
 
 <p align="center">
-  <i>Supported by</i>
+  <i>Featured on</i>
 </p>
 <p align="center">
   <a href="https://terminaltrove.com/stormy/">
