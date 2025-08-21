@@ -104,6 +104,8 @@ file on first run:
 - `provider`: Weather data provider ("`OpenMeteo`" or "`OpenWeatherMap`"). Defaults to "`OpenMeteo`".
 - `api_key`: Your OpenWeatherMap API key.
 - `city`: The city for which to fetch weather data.
+- `latitude`: The latitude for which to fetch weather data. Requires `longitude` to also be set.
+- `longitude`: The longitude for which to fetch weather data. Requires `latitude` to also be set.
 - `units`: Units for temperature and wind speed (`metric`, `imperial` or
   `standard`).
 - `showcityname`: Whether to display the city name (`true` or `false`).
@@ -147,6 +149,9 @@ stormy
 
 # Specify city via command line
 stormy --city "New York"
+
+# Use latitude/longitude instead of city
+stormy --latitude 46.192 --longitude -122.193
 
 # Use imperial units
 stormy --units imperial
