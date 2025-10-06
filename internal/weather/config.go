@@ -120,35 +120,14 @@ func ReadConfig() Config {
 		return defaultConfig
 	}
 
-	// Create the directory if it doesn't exist
-	configDir := filepath.Dir(configPath)
-	if _, err := os.Stat(configDir); os.IsNotExist(err) {
-		if err = os.MkdirAll(configDir, 0755); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "Failed to create config directory:", err)
-			return defaultConfig
-		}
-	}
-
 	// Check if the config file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		// Create default config
-		var file *os.File
-		file, err = os.Create(configPath)
+		err = WriteConfig(defaultConfig, configPath)
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "Failed to create config file:", err)
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to create a default config file:", err)
 			return defaultConfig
 		}
-		defer func(f *os.File) {
-			_ = f.Close()
-		}(file)
-
-		if err = toml.NewEncoder(file).Encode(defaultConfig); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "Failed to write default config:", err)
-			return defaultConfig
-		}
-
 		fmt.Printf("No config detected, config created at %s.\n", configPath)
-		fmt.Println("Please edit the configuration file to add your API key and city.")
 		return defaultConfig
 	}
 
@@ -195,18 +174,10 @@ func ReadConfig() Config {
 		}
 
 		// Write corrected config back
-		var file *os.File
-		file, err = os.Create(configPath)
+		err = WriteConfig(defaultConfig, configPath)
 		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "Failed to update config file:", err)
+			_, _ = fmt.Fprintln(os.Stderr, "Failed to update the config file:", err)
 			return defaultConfig
-		}
-		defer func(f *os.File) {
-			_ = f.Close()
-		}(file)
-
-		if err = toml.NewEncoder(file).Encode(defaultConfig); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "Failed to write merged config:", err)
 		}
 
 		config = defaultConfig
@@ -216,6 +187,32 @@ func ReadConfig() Config {
 	ValidateConfig(&config)
 
 	return config
+}
+
+// WriteConfig writes the given configuration into the specified location
+func WriteConfig(config Config, configPath string) error {
+	// Create the directory if it doesn't exist
+	configDir := filepath.Dir(configPath)
+	if _, err := os.Stat(configDir); os.IsNotExist(err) {
+		if err = os.MkdirAll(configDir, 0755); err != nil {
+			return fmt.Errorf("failed to create config directory: %w", err)
+		}
+	}
+
+	// Create default config
+	file, err := os.Create(configPath)
+	if err != nil {
+		return fmt.Errorf("failed to create config file: %w", err)
+	}
+	defer func(f *os.File) {
+		_ = f.Close()
+	}(file)
+
+	if err = toml.NewEncoder(file).Encode(config); err != nil {
+		return fmt.Errorf("failed to write config: %w", err)
+	}
+
+	return nil
 }
 
 // ParseFlags parses command line flags
