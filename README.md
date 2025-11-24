@@ -165,9 +165,8 @@ stormy --help
 
 | ![Base](./assets/base.png)       | ![Colored](./assets/colored.png)    |
 |----------------------------------|-------------------------------------|
-| ![Minimal](./assets/minimal.png) | ![City name](./assets/cityname.png) |
-| ![1](./assets/1.png)             | ![3](./assets/3.png)                |
-| ![4](./assets/4.png)             | ![2](./assets/2.png)                |
+| ![Minimal](./assets/minimal.png) | ![1](./assets/1.png) |
+| ![4](./assets/4.png)             | ![3](./assets/3.png)                |
 
 ## Acknowledgements
 
