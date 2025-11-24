@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"os"
@@ -99,25 +100,39 @@ func main() {
 	config := weather.ReadConfig()
 
 	// Override config with command line flags if provided
+	preFlagsConfig := config
 	weather.ApplyFlags(&config, flags)
+
+	scanner := bufio.NewScanner(os.Stdin)
 
 	// Check if the city is set
 	if config.City == "" {
-		_, _ = fmt.Fprintln(os.Stderr, "Error: City must be set in the config file or via command line flags")
-		_, _ = fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
-		_, _ = fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
-		os.Exit(1)
+		fmt.Printf("No city found in your configuration, please enter the city to check the weather for: ")
+		scanner.Scan()
+		newCity := scanner.Text()
+		config.City = newCity
+		preFlagsConfig.City = newCity
+		err := weather.WriteConfig(preFlagsConfig, weather.GetConfigPath())
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Failed to update your stored config: %v\n", err)
+			_, _ = fmt.Fprintln(os.Stderr, "You'll need to enter your city back next time if still not provided through the configuration or command line flags")
+			_, _ = fmt.Fprintln(os.Stderr, "Proceeding with the provided city")
+		}
 	}
 
 	// Check if the API key and city are set
 	if config.Provider == weather.ProviderOpenWeatherMap && config.ApiKey == "" {
-		_, _ = fmt.Fprintf(
-			os.Stderr, "Error: API key must be set in the config file when using %s\n",
-			weather.ProviderOpenWeatherMap,
-		)
-		_, _ = fmt.Fprintln(os.Stderr, "Get your API key from https://openweathermap.org/api")
-		_, _ = fmt.Fprintln(os.Stderr, "Config file location:", weather.GetConfigPath())
-		_, _ = fmt.Fprintf(os.Stderr, "Run '%s --help' for usage information.\n", os.Args[0])
+		fmt.Printf("No API key provided for %s, please enter it: ", config.Provider)
+		scanner.Scan()
+		apiKey := scanner.Text()
+		config.ApiKey = apiKey
+		preFlagsConfig.ApiKey = apiKey
+		err := weather.WriteConfig(preFlagsConfig, weather.GetConfigPath())
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Failed to update your stored config: %v\n", err)
+			_, _ = fmt.Fprintln(os.Stderr, "You'll need to enter your API key back next time if still not provided through the configuration or command line flags")
+			_, _ = fmt.Fprintln(os.Stderr, "Proceeding with the provided API key")
+		}
 	}
 
 	fetchAndDisplay(config, false)
