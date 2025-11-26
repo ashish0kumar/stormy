@@ -45,8 +45,26 @@ const (
 
 var directionSymbols = [...]string{"↑", "↗", "→", "↘", "↓", "↙", "←", "↖"}
 
+
 func celsiusToFahrenheit(c float64) float64 {
 	return c*9/5 + 32
+}
+
+// dewPointCelsius calculates dew point in Celsius given temperature (C) and relative humidity (%)
+func dewPointCelsius(tempC float64, humidity int) float64 {
+	t := tempC
+	rh := float64(humidity)
+	a := 17.27
+	b := 237.7
+	alpha := ((a * t) / (b + t)) + math.Log(rh/100)
+	return (b * alpha) / (a - alpha)
+}
+
+// dewPointFahrenheit calculates dew point in Fahrenheit given temperature (F) and relative humidity (%)
+func dewPointFahrenheit(tempF float64, humidity int) float64 {
+	tempC := (tempF - 32) * 5 / 9
+	dpC := dewPointCelsius(tempC, humidity)
+	return celsiusToFahrenheit(dpC)
 }
 
 // getWindDirectionSymbol converts wind degrees to a direction symbol
@@ -67,20 +85,26 @@ func DisplayWeather(weather *Weather, config Config) {
 		weatherID = weather.Weather[0].ID
 	}
 
+
 	// Determine units based on config
-	var windSpeedUnits, tempUnit string
+	var windSpeedUnits, tempUnit, dewPointUnit string
 
 	// Convert wind speed based on provider and units
 	windSpeed := weather.Wind.Speed
 	temperature := weather.Main.Temp
+	dewPoint := 0.0
 
 	switch config.Units {
 	case UnitImperial:
 		windSpeedUnits = "mph"
 		tempUnit = "°F"
+		dewPointUnit = "°F"
 
 		// Convert temperature for both providers
 		temperature = celsiusToFahrenheit(temperature)
+
+		// Calculate dew point in Fahrenheit
+		dewPoint = dewPointFahrenheit(temperature, weather.Main.Humidity)
 
 		// Convert wind speed based on this provider
 		if config.Provider == ProviderOpenWeatherMap {
@@ -92,6 +116,10 @@ func DisplayWeather(weather *Weather, config Config) {
 	default:
 		windSpeedUnits = "km/h"
 		tempUnit = "°C"
+		dewPointUnit = "°C"
+
+		// Calculate dew point in Celsius
+		dewPoint = dewPointCelsius(weather.Main.Temp, weather.Main.Humidity)
 
 		// Convert wind speed for OpenWeatherMap provider
 		if config.Provider == ProviderOpenWeatherMap {
@@ -110,7 +138,7 @@ func DisplayWeather(weather *Weather, config Config) {
 		popPercent = int(math.Round(weather.Pop * 100))
 	}
 
-	labels := make([]string, 0, 6)
+	labels := make([]string, 0, 7)
 	values := make([]string, 0, cap(labels))
 
 	// City name display
@@ -136,6 +164,9 @@ func DisplayWeather(weather *Weather, config Config) {
 		labels = append(labels, "Temp ")
 		values = append(values, fmt.Sprintf("%.1f%s", temperature, tempUnit))
 
+		labels = append(labels, "Dew Pt ")
+		values = append(values, fmt.Sprintf("%.1f%s", dewPoint, dewPointUnit))
+
 		labels = append(labels, "Wind ")
 		values = append(
 			values, fmt.Sprintf("%.1f %s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg)),
@@ -150,6 +181,7 @@ func DisplayWeather(weather *Weather, config Config) {
 		// Compact mode doesn't use labels in the same way
 		weatherDisplay := description
 		tempDisplay := fmt.Sprintf("%.1f%s", temperature, tempUnit)
+		dewPointDisplay := fmt.Sprintf("%.1f%s", dewPoint, dewPointUnit)
 		windDisplay := fmt.Sprintf("%.1f%s %s", windSpeed, windSpeedUnits, getWindDirectionSymbol(weather.Wind.Deg))
 		humidityDisplay := fmt.Sprintf("%d%%", weather.Main.Humidity)
 		precipitationDisplay := fmt.Sprintf("%.1fmm | %d%%", precipitationMM, popPercent)
@@ -161,6 +193,7 @@ func DisplayWeather(weather *Weather, config Config) {
 			cityName,
 			weatherDisplay,
 			tempDisplay,
+			dewPointDisplay,
 			windDisplay,
 			humidityDisplay,
 			precipitationDisplay,
@@ -274,11 +307,11 @@ func displayWeatherArtAligned(mainWeather string, weatherID int, labels, values 
 }
 
 // displayWeatherArtCompact shows ASCII art with compact formatting
+
 func displayWeatherArtCompact(
 	mainWeather string, weatherID int, cityName, weatherDisplay,
-	tempDisplay, windDisplay, humidityDisplay, precipDisplay string, config Config,
+	tempDisplay, dewPointDisplay, windDisplay, humidityDisplay, precipDisplay string, config Config,
 ) {
-
 	// Get the weather icon
 	iconLines := getWeatherIcon(mainWeather, weatherID, config.UseColors)
 
@@ -289,6 +322,7 @@ func displayWeatherArtCompact(
 		}
 		weatherDisplay = getColoredWeatherText(mainWeather, weatherDisplay)
 		tempDisplay = color.RedString(tempDisplay)
+		dewPointDisplay = color.CyanString(dewPointDisplay)
 		windDisplay = color.GreenString(windDisplay)
 		humidityDisplay = color.CyanString(humidityDisplay)
 
@@ -301,14 +335,14 @@ func displayWeatherArtCompact(
 	}
 
 	// Prepare the text lines
-	textLines := make([]string, 0, 5)
+	textLines := make([]string, 0, 7)
 	textLines = append(textLines, "") // Empty line to match icon top spacing
 
 	if cityName != "" && config.ShowCityName {
 		textLines = append(textLines, cityName)
 	}
 
-	textLines = append(textLines, weatherDisplay, tempDisplay, windDisplay, humidityDisplay)
+	textLines = append(textLines, weatherDisplay, tempDisplay, dewPointDisplay, windDisplay, humidityDisplay)
 
 	if precipDisplay != "" {
 		textLines = append(textLines, precipDisplay)
