@@ -103,6 +103,27 @@ func main() {
 	preFlagsConfig := config
 	weather.ApplyFlags(&config, flags)
 
+	// ========== بخش جدید: پشتیبانی از پیش‌بینی ۷ روزه ==========
+	// اگر حالت پیش‌بینی فعال بود
+	if flags.Forecast {
+		// اگر شهر تنظیم نشده بود، از کاربر بپرس
+		if config.City == "" {
+			fmt.Printf("No city found, please enter the city for 7-day forecast: ")
+			scanner := bufio.NewScanner(os.Stdin)
+			scanner.Scan()
+			config.City = scanner.Text()
+		}
+		
+		forecasts, err := weather.Fetch7DayForecast(config.City)
+		if err != nil {
+			fmt.Printf("Error fetching 7-day forecast: %v\n", err)
+			os.Exit(1)
+		}
+		weather.Render7DayForecast(config.City, forecasts)
+		return // مهم: از اینجا برمی‌گردیم و بقیه کد اجرا نمی‌شه
+	}
+	// ==========================================================
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// Check if the city is set
