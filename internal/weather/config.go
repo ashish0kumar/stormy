@@ -28,6 +28,7 @@ type Config struct {
 type Flags struct {
 	City, Units            string
 	Compact, Help, Version bool
+	Forecast               bool   // <-- جدید
 }
 
 const (
@@ -222,6 +223,8 @@ func ParseFlags() (flags Flags) {
 	flag.BoolVar(&flags.Compact, "compact", false, "Compact display mode")
 	flag.BoolVar(&flags.Help, "help", false, "Show help")
 	flag.BoolVar(&flags.Version, "version", false, "Show version information")
+	flag.BoolVar(&flags.Forecast, "forecast", false, "Show 7-day forecast instead of current weather")
+	flag.BoolVar(&flags.Forecast, "f", false, "Shorthand for --forecast")
 
 	// Add usage information
 	flag.Usage = func() {
